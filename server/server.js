@@ -519,7 +519,7 @@ function sendTo(connection, message) {
 //   });
 // };
 
-console.log('Server running. Visit https://localhost:' + HTTPS_PORT + ' in Firefox/Chrome.\n\n\
+console.log('Server running. Visit https://64.225.98.246:' + HTTPS_PORT + ' in Firefox/Chrome.\n\n\
 Some important notes:\n\
   * Note the HTTPS; there is no HTTP -> HTTPS redirect.\n\
   * You\'ll also need to accept the invalid TLS certificate.\n\

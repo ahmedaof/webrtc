@@ -22,5 +22,5 @@ RUN ln -s /app/uploads /app/public/uploads
 
 # build app for production with minification
 
-EXPOSE 8443
+EXPOSE 5000
 CMD ["npm", "start"]

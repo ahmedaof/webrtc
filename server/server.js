@@ -1,4 +1,4 @@
-const HTTPS_PORT = 8443;
+const HTTPS_PORT = 5000;
 
 const fs = require('fs');
 const https = require('https');
@@ -519,7 +519,7 @@ function sendTo(connection, message) {
 //   });
 // };
 
-console.log('Server running. Visit https://localhost:' + HTTPS_PORT + ' in Firefox/Chrome.\n\n\
+console.log(`Server running. Visit https://${window.location.hostname}:` + HTTPS_PORT + ' in Firefox/Chrome.\n\n\
 Some important notes:\n\
   * Note the HTTPS; there is no HTTP -> HTTPS redirect.\n\
   * You\'ll also need to accept the invalid TLS certificate.\n\

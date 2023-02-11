@@ -16,8 +16,8 @@ var users = {};
 var map = new Map();
 
 const serverConfig = {
-   key: fs.readFileSync('./../key.pem'),
-   cert: fs.readFileSync('./../cert.pem'),
+   key: fs.readFileSync('key.pem'),
+   cert: fs.readFileSync('cert.pem'),
 };
 
 // Create a server for the client html page
@@ -27,10 +27,10 @@ const handleRequest = function(request, response) {
  
     if(request.url === '/') {
        response.writeHead(200, {'Content-Type': 'text/html'});
-       response.end(fs.readFileSync('./../client/index.html'));
+       response.end(fs.readFileSync('client/index.html'));
    } else if(request.url === '/webrtc.js') {
        response.writeHead(200, {'Content-Type': 'application/javascript'});
-       response.end(fs.readFileSync('./../client/webrtc.js'));
+       response.end(fs.readFileSync('client/webrtc.js'));
    }
  };
  

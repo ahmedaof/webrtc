@@ -158,7 +158,6 @@ connection.onmessage = function (message) {
             handleOffer(data.offer, data.name); 
           break; 
           case "answer": 
-          alert('answer')
             console.log('inside answer')
             handleAnswer(data.answer); 
           break; 

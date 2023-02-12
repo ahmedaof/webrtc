@@ -1,4 +1,4 @@
-﻿var connection = new WebSocket(`https://${window.location.host}`);
+﻿var connection = new WebSocket(`wss://${window.location.host}`);
 var Send_dataChannel, peerConnection, connectedUser, Receive_dataChannel;
 var username;
 var chat_window_flag = false;

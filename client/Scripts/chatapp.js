@@ -1,4 +1,4 @@
-﻿var connection = new WebSocket('ws://64.225.98.246:8886');
+﻿var connection = new WebSocket('ws://64.225.98.246:90');
 var Send_dataChannel, peerConnection, connectedUser, Receive_dataChannel;
 var username;
 var chat_window_flag = false;

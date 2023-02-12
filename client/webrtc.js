@@ -8,7 +8,7 @@ var connectionState;
 var name; 
 var connectedUser;
 
-var connection = new WebSocket(`ws:https://${window.location.host}`);
+var connection = new WebSocket(`https://${window.location.host}`);
 
 
 var Send_dataChannel, peerConnection, connectedUser, Receive_dataChannel;

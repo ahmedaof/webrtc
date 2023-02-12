@@ -20,4 +20,4 @@ COPY . .
 # build app for production with minification
 
 EXPOSE 5000
-CMD ["npm", "start"]
+CMD ["npm","run","start"]

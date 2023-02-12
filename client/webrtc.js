@@ -9,7 +9,7 @@ var connectionState;
 var name; 
 var connectedUser;
 
-connection = new WebSocket('wss://' + '64.225.98.246' + ':5000');
+connection = new WebSocket('wss://' + 'localhost' + ':5000');
 
 var Send_dataChannel, peerConnection, connectedUser, Receive_dataChannel;
 var username;
@@ -381,8 +381,6 @@ function creating_answer() {
  * This function will handle when another user answers to our offer .
  */
  function onAnswer(answer) {
-    alert('fdg')
-
      console.log("when another user answers to  offer => answer = "+ answer);
     //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
      yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
@@ -1311,7 +1309,6 @@ function errorHandler(error) {
 //when we got an answer from a remote user 
 function handleAnswer(answer) { 
   console.log('answer: ', answer)
-  
   // open video stream between two users webrtc server
   yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
 };

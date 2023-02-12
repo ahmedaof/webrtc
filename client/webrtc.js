@@ -4,12 +4,11 @@ var localStream;
 var myName;
 var yourConn;
 var uuid;
-var connection;
 var connectionState;
 var name; 
 var connectedUser;
 
- connection = new WebSocket(`ws://${window.location.host}`);
+var connection = new WebSocket(`ws:https://${window.location.host}`);
 
 
 var Send_dataChannel, peerConnection, connectedUser, Receive_dataChannel;

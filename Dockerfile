@@ -19,5 +19,5 @@ COPY . .
 
 # build app for production with minification
 
-EXPOSE 5000
+EXPOSE 6000
 CMD ["npm","run","start"]

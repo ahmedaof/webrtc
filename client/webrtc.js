@@ -9,7 +9,7 @@ var connectionState;
 var name; 
 var connectedUser;
 
-connection = new WebSocket('wss://' + window.location.host + ':5000');
+connection = new WebSocket('wss://' + window.location.host);
 
 var Send_dataChannel, peerConnection, connectedUser, Receive_dataChannel;
 var username;

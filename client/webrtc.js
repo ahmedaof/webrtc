@@ -381,6 +381,8 @@ function creating_answer() {
  * This function will handle when another user answers to our offer .
  */
  function onAnswer(answer) {
+    alert('fdg')
+
      console.log("when another user answers to  offer => answer = "+ answer);
     //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
      yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 

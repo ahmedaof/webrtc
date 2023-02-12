@@ -9,7 +9,7 @@ var connectionState;
 var name; 
 var connectedUser;
 
-connection = new WebSocket('wss://' + window.location.hostname + ':5000');
+connection = new WebSocket('wss://' + '64.225.98.246' + ':5000');
 
 var Send_dataChannel, peerConnection, connectedUser, Receive_dataChannel;
 var username;
@@ -158,6 +158,7 @@ connection.onmessage = function (message) {
             handleOffer(data.offer, data.name); 
           break; 
           case "answer": 
+          alert('answer')
             console.log('inside answer')
             handleAnswer(data.answer); 
           break; 

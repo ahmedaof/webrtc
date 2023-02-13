@@ -20,4 +20,10 @@ COPY . .
 # build app for production with minification
 
 EXPOSE 5000
+EXPOSE 4430
+EXPOSE 1935
+EXPOSE 8086
+EXPOSE 9443
+EXPOSE 8080/udp
+EXPOSE 6970-6980
 CMD ["npm","run","start"]

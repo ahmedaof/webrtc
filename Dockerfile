@@ -19,7 +19,7 @@ COPY . .
 
 # build app for production with minification
 
-EXPOSE 5000
+EXPOSE 3030
 EXPOSE 4430
 EXPOSE 19302
 EXPOSE 8086

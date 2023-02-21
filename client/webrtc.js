@@ -196,13 +196,47 @@ connection.onmessage = function (message) {
      // stop form submission
      event.preventDefault();
      // handle the form data
-     var username_obj = form.elements['Userame'];
-     username = username_obj.value; 
-     document.getElementById('divChatName_username').innerHTML = username;
-     send({
-         type: "login",
-         name: username
-     });
+     var email_obj = form.elements['Email'];
+     var password_obj = form.elements['Password'];
+     password = password_obj.value; 
+     email = email_obj.value; 
+     
+
+
+        var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({
+  "email": email,
+  "password":password,
+});
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("https://localhost:5000/auth/signin", requestOptions)
+  .then(response => response.text())
+  .then(result => {JSON.parse(result).error ? alert(JSON.stringify(JSON.parse(result).error)) :
+
+
+  send({
+     type: "login",
+     name: JSON.parse(result).user.name
+   })
+
+   localStorage.setItem("token",JSON.parse(result).token)
+ 
+  })
+  .catch(error => alert('Email or password is incorrect'));
+    //  document.getElementById('divChatName_username').innerHTML = username;
+    //  send({
+    //      type: "login",
+    //      name: username
+    //  });
  });
 /*********************************************************************
  *  WebRTC related Functions (Creation of RTC peer connection, Offer, ICE, SDP, Answer etc..)
@@ -1052,6 +1086,72 @@ function SendMessage() {
 /**
  * This function will populate the online userlist from the server.
 */
+
+function add_user_to_list(userArray){
+    const map2 = new Map(userArray);
+    document.getElementById('lstChat').innerHTML = ''
+    var myHeaders = new Headers();
+myHeaders.append("Authorization", `Bearer ${localStorage.getItem('token')}`);
+myHeaders.append("Cookie", `t=${localStorage.getItem('token')}`);
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'
+};
+
+fetch("https://localhost:5000/user", requestOptions)
+.then(response => response.text())
+.then(async(result) =>
+{
+    let users = await JSON.parse(result).users;
+    console.log(users);
+    for(let i=0;i<users.length;i++){
+
+        document.getElementById('lstChat').innerHTML += "<li class='list-group-item list-group-item-action'>" +
+        "<div class='row'>" +
+        "<div class='col-md-2'>" +
+        `<img src="https://www.shutterstock.com/image-vector/avatar-man-icon-symbol-simple-260nw-1701935266.jpg" class='friend-pic rounded-circle' />`+
+        "</div>" +
+        // "<button id = 'callBtn' class = 'btn-success btn'>" 
+        "<div class='col-md-7' style='cursor:pointer;' onclick='request_call(\"" + users[i].name + "\")'>" +
+        "<div class='name'>" + users[i].name + "</div>" +
+         "<div class='under-name'><span id=online_status_"+slugify(users[i].name)+" class='indicator'></span>" + users[i].name + "</div>" +
+        "</div>" +
+        "<div class='col-md-3 mt-3 video-icon' onclick='video_user(\"" + users[i].name + "\")'>" + '<i class="fas fa-video"></i>' + "</div>" +
+        "</div>" +
+        "</li>"
+
+        // Update_user_status(users[i].name,'online')
+        // Update_user_status(users[i].id, value);
+    }
+
+    let id = 0;
+    for (let [key, value] of map2) {
+
+                // if (username != key) { 
+                    var id_name = 'online_status_'+key; /* Used for dynamic id */
+                        console.log("ddddddddddd",key)
+                        console.log("ssssssssss",value)
+                    Update_user_status(slugify(id_name), value);    
+                    id++;   
+                // }
+            }
+  }
+    )
+  .catch(error => console.log('error', error));
+                                                        
+   
+}
+
+const slugify = str =>
+  str
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '_')
+    .replace(/^-+|-+$/g, '');
+
 function LoadOnlineUserList(username_array) {
     
     /* convert the json to Map */
@@ -1059,57 +1159,60 @@ function LoadOnlineUserList(username_array) {
     /* Count of online user -> server send all user list , we have to remove our name from that list */
     document.getElementById('onlineusers').innerHTML = '<span class="indicator label-success"></span>' +
                                                         'online users (' + (map2.size - 1) + ')';
-    document.getElementById('lstChat').innerHTML = "";
+    document.getElementById('lstChat').innerHTML = '';
 
-    if (map2.size > 1) {
+    // if (map2.size > 1) {
         
-        var id = 0;
+    //     var id = 0;
 
-        for (let [key, value] of map2) {
-            if (username != key) { 
-                var id_name = 'online_status_'+id; /* Used for dynamic id */
-                /*populate the sidebar online users list dynamically*/
-                document.getElementById('lstChat').innerHTML += "<li class='list-group-item list-group-item-action'>" +
-                    "<div class='row'>" +
-                    "<div class='col-md-2'>" +
-                    `<img src="https://www.shutterstock.com/image-vector/avatar-man-icon-symbol-simple-260nw-1701935266.jpg" class='friend-pic rounded-circle' />`+
-                    "</div>" +
-                    // "<button id = 'callBtn' class = 'btn-success btn'>" 
-                    "<div class='col-md-7' style='cursor:pointer;' onclick='request_call(\"" + key + "\")'>" +
-                    "<div class='name'>" + key + "</div>" +
-                    "<div class='under-name'><span id="+id_name+" class='indicator label-success'></span>" + value + "</div>" +
-                    "</div>" +
-                    "<div class='col-md-3 mt-3 video-icon' onclick='video_user(\"" + key + "\")'>" + '<i class="fas fa-video"></i>' + "</div>" +
-                    "</div>" +
-                    "</li>";
+    //     for (let [key, value] of map2) {
+    //         if (username != key) { 
+    //             var id_name = 'online_status_'+id; /* Used for dynamic id */
+    //             /*populate the sidebar online users list dynamically*/
+    //             document.getElementById('lstChat').innerHTML += "<li class='list-group-item list-group-item-action'>" +
+    //                 "<div class='row'>" +
+    //                 "<div class='col-md-2'>" +
+    //                 `<img src="https://www.shutterstock.com/image-vector/avatar-man-icon-symbol-simple-260nw-1701935266.jpg" class='friend-pic rounded-circle' />`+
+    //                 "</div>" +
+    //                 // "<button id = 'callBtn' class = 'btn-success btn'>" 
+    //                 "<div class='col-md-7' style='cursor:pointer;' onclick='request_call(\"" + key + "\")'>" +
+    //                 "<div class='name'>" + key + "</div>" +
+    //                 "<div class='under-name'><span id="+id_name+" class='indicator label-success'></span>" + value + "</div>" +
+    //                 "</div>" +
+    //                 "<div class='col-md-3 mt-3 video-icon' onclick='video_user(\"" + key + "\")'>" + '<i class="fas fa-video"></i>' + "</div>" +
+    //                 "</div>" +
+    //                 "</li>";
                     
-                Update_user_status(id_name, value);    
-                id++;   
-            }
-        }
-    }
-    else
-    {
-            /* Only one user name present ie. only client */
-            if (map2.key == username) {
-                document.getElementById('lstChat').innerHTML = "";
-                console.log("single user = ", map2.key);
-            }
-    }
+    //             Update_user_status(id_name, value);    
+    //             id++;   
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //         /* Only one user name present ie. only client */
+    //         if (map2.key == username) {
+    //             document.getElementById('lstChat').innerHTML = "";
+    //             console.log("single user = ", map2.key);
+    //         }
+    // }
+    // console.log(map2)
+    add_user_to_list(username_array);
 }
 function Update_user_status(id_name, value)
 {
+    console.log("update user status",id_name)
     switch(value)
     {
         /* handle the user status */
         case "online":
-            document.getElementById(id_name).classList.replace('label-danger', 'label-success');
+            document.getElementById(id_name).classList.add('label-success');
             break;
         case "busy":
             document.getElementById(id_name).classList.replace('label-success','label-danger'); 
             break;
         default:
-            document.getElementById(id_name).classList.add('label-success');
+            document.getElementById(id_name).classList.remove('label-success');
             break;
     }
 }

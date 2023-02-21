@@ -1,7 +1,41 @@
-const HTTPS_PORT = 5000;
 
 const fs = require('fs');
 const https = require('https');
+
+const expressValidator = require('express-validator');
+require("dotenv").config();
+require("./config/database").connect();
+
+const express = require("express");
+
+const app = express();
+
+app.use(express.json());
+app.use(expressValidator());
+
+const authRoutes = require('../routes/auth');
+const userRoutes = require('../routes/user');
+const appRoutes = require('../routes/app');
+
+
+const User = require("../model/user");
+
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+app.use("/app", appRoutes);
+
+ 
+
+app.get('/', (req, res) => {
+	res.writeHead(200, {'Content-Type': 'text/html'});
+	res.end(fs.readFileSync('client/index.html'));
+})
+app.get('/webrtc.js', (req, res) => {
+	res.writeHead(200, {'Content-Type': 'application/javascript'});
+   res.end(fs.readFileSync('client/webrtc.js'));
+})
+
+const HTTPS_PORT = process.env.API_PORT || 5000;
 
 /*******************************************************************
 *	Function Name	: webRTC signaling server
@@ -21,20 +55,7 @@ const serverConfig = {
 };
 
 // Create a server for the client html page
-const handleRequest = function(request, response) {
-   // Render the single client html file for any request the HTTP server receives
-    console.log('request received: ' + request.url);
- 
-    if(request.url === '/') {
-       response.writeHead(200, {'Content-Type': 'text/html'});
-       response.end(fs.readFileSync('client/index.html'));
-   } else if(request.url === '/webrtc.js') {
-       response.writeHead(200, {'Content-Type': 'application/javascript'});
-       response.end(fs.readFileSync('client/webrtc.js'));
-   }
- };
- 
-const httpsServer = https.createServer(serverConfig, handleRequest);
+const httpsServer = https.createServer(serverConfig, app);
 httpsServer.listen(HTTPS_PORT, '0.0.0.0');
 
 const WebSocket = require('ws');

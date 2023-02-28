@@ -311,49 +311,49 @@ wss.on('connection', function (connection) {
 
 					break;
 
-					case "call_started" :
+					// case "call_started" :
 
-					// save current time to mongodb
+					// // save current time to mongodb
 					
-					var start = new strat_time({start_time: new Date(), name: data.name})
-					start.save((err, data) => {
-						if (err) {
-						console.error(err);
-						}
-						console.log(data);
-					});
+					// var start = new strat_time({start_time: new Date(), name: data.name})
+					// start.save((err, data) => {
+					// 	if (err) {
+					// 	console.error(err);
+					// 	}
+					// 	console.log(data);
+					// });
 
 					
 
 
 
 
-					break;
+					// break;
 
-					case "call_leaved" :
+					// case "call_leaved" :
 
-					let startTime = strat_time.findOne({name: data.name}, function (err, time) {
-						if (err) {
-							console.error(err);
-						}
-						console.log('time', time)
-						var logedata = new log({message: 'call details', start_time: time.start_time,type: 'time', name: data.name, from: data.other_user , end_time: new Date()});
+					// let startTime = strat_time.findOne({name: data.name}, function (err, time) {
+					// 	if (err) {
+					// 		console.error(err);
+					// 	}
+					// 	console.log('time', time)
+					// 	var logedata = new log({message: 'call details', start_time: time.start_time,type: 'time', name: data.name, from: data.other_user , end_time: new Date()});
 
-						logedata.save((err, data) => {
-							if (err) {
-							console.error(err);
-							}
-							console.log(data);
-						});
-						time.remove()
-					});
+					// 	logedata.save((err, data) => {
+					// 		if (err) {
+					// 		console.error(err);
+					// 		}
+					// 		console.log(data);
+					// 	});
+					// 	time.remove()
+					// });
 
 					
 					
 	
 
 
-					break;
+					// break;
 
 	
 					/* default */

@@ -9,7 +9,7 @@ var connectionState;
 var name; 
 var connectedUser;
 
- connection = new WebSocket(`wss://${window.location.hostname}:2000`);
+ connection = new WebSocket(`wss://${window.location.hostname}:3000`);
 
 
 var Send_dataChannel, peerConnection, connectedUser, Receive_dataChannel;
@@ -27,6 +27,7 @@ var id_wordflick;
 /**
  * This function will send ping request to server
  */
+
 
 var configuration = {
     "iceServers": [
@@ -221,7 +222,7 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("https://localhost:5000/auth/signin", requestOptions)
+fetch("https://localhost:3000/auth/signin", requestOptions)
   .then(response => response.text())
   .then(result => {JSON.parse(result).error ? alert(JSON.stringify(JSON.parse(result).error)) :
 
@@ -1172,7 +1173,7 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("https://localhost:5000/user", requestOptions)
+fetch("https://localhost:3000/user", requestOptions)
 .then(response => response.text())
 .then(async(result) =>
 {

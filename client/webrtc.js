@@ -222,7 +222,7 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("https://localhost:3000/auth/signin", requestOptions)
+fetch("https://voiptecworlds.online:3000/auth/signin", requestOptions)
   .then(response => response.text())
   .then(result => {JSON.parse(result).error ? alert(JSON.stringify(JSON.parse(result).error)) :
 
@@ -1173,7 +1173,7 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("https://localhost:3000/user", requestOptions)
+fetch("https://voiptecworlds.online:3000/user", requestOptions)
 .then(response => response.text())
 .then(async(result) =>
 {

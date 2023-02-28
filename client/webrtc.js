@@ -93,6 +93,9 @@ connection.onopen = function () {
  * This function will handle all the messages from server.
  * Main functiion to receive data from server.
  */
+
+
+window.addEventListener('beforeunload', left_from_server)
 connection.onmessage = function (message) {
 
     console.log("message from server = ", message.data);
@@ -111,7 +114,7 @@ connection.onmessage = function (message) {
             break;
 
         case "server_offer":
-            onOffer(data.offer, data.name);
+            onOffer(data.offer, data.name ,data.offerType);
             break;
 
         case "server_answer":
@@ -229,6 +232,7 @@ fetch("https://localhost:5000/auth/signin", requestOptions)
    })
 
    localStorage.setItem("token",JSON.parse(result).token)
+   localStorage.setItem("name",JSON.parse(result).user.name)
  
   })
   .catch(error => alert('Email or password is incorrect'));
@@ -370,6 +374,7 @@ function Create_DataChannel(name) {
 
         console.log("creating offer ---");
         console.log("offer = "+ peerConnection.localDescription);
+        alert("type")
         send({
             type: "offer",
             offer: offer
@@ -452,6 +457,7 @@ function onCandidate(candidate) {
     if (success === false) {
         alert("Username is already taken .. choose different one");
     } else {
+
         var constraints = {
             video: true,
             audio: true
@@ -463,6 +469,8 @@ function onCandidate(candidate) {
           } else {
             alert('Your browser does not support getUserMedia API');
           }
+
+
         Update_user_status("clientuser_status","online");
         document.getElementById('signupStart').setAttribute('style', 'display:none');
     }
@@ -492,6 +500,13 @@ $('#incoming_call_Modal').on('show.bs.modal', function () {
     var myModal = $(this);
     clearTimeout(myModal.data('hideInterval'));
     myModal.data('hideInterval', setTimeout(function () {
+        // send the reject message to server with user name and other user name
+        alert('reject call from modal popup name: ' + localStorage.getItem("name") + ' other user: ' + connectedUser );
+        send({
+            type: "notResponse",
+            name: localStorage.getItem("name"),
+            other_user: connectedUser
+        });
         if (chat_window_flag != true && incoming_popup_set == true) {
             myModal.modal('hide').data('bs.modal', null);
             populate_error("noresponse");
@@ -643,6 +658,11 @@ function Create_Popup_Notifications() {
  * user has left from the Browser/Connection (If user already in call)
  */
 function left_from_server() {
+    send({
+        type: "call_leaved",
+        name: localStorage.getItem("name"),
+        other_user: connectedUser
+    })
     if (chat_window_flag == true) {
         Delete_webrtc_connection();
         //you are in a call
@@ -823,7 +843,11 @@ function video_user(name) {
 
 function request_call(name) {
     
-    call_user(name)
+    call_user(name , 'video')
+}
+
+function request_voice_call(name) {
+    call_user(name , 'voice')
 }
 
 
@@ -861,8 +885,30 @@ function request_call(name) {
 //     else 
 //       alert("username can't be blank!")
 //   });
-function call_user(name) {
+function call_user(name,type) {
     console.log('inside call button')
+
+  
+    if(type == 'video')
+    {
+       
+
+    }
+    else{
+
+        let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
+
+        if(videoTrack.enabled){
+            videoTrack.enabled = false
+            localVideo.src = null;
+            localVideo.style.display = 'none';
+            remoteVideo.style.display = 'none';
+        }else{
+            videoTrack.enabled = true
+        }
+
+
+    }
 
     var callToUsername = name;
   
@@ -877,10 +923,14 @@ function call_user(name) {
     var signallingState2 = yourConn.signalingState;
   //console.log('connection state after',connectionState1)
   console.log('signalling state after',signallingState2)
+
+ 
+
     yourConn.createOffer(function (offer) { 
        send({
           type: "offer", 
-          offer: offer 
+          offer: offer ,
+          offerType:type
        }); 
     
        yourConn.setLocalDescription(offer); 
@@ -891,7 +941,7 @@ function call_user(name) {
     document.getElementById('callOngoing').style.display = 'block';
     document.getElementById('callInitiator').style.display = 'none';
 
-  } 
+    } 
   else 
     alert("username can't be blank!")
 
@@ -915,7 +965,23 @@ function call_user(name) {
 /**
  * This function will handle when somebody wants to call us 
  */
-function onOffer(offer, name) {
+function onOffer(offer, name , offerType) {
+
+    if(offerType == 'voice')
+    {
+
+        let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
+    
+        if(videoTrack.enabled){
+            videoTrack.enabled = false
+            localVideo.src = null;
+            localVideo.style.display = 'none';
+            remoteVideo.style.display = 'none';
+        }else{
+            videoTrack.enabled = true
+        }
+    }
+
 
     console.log("somebody wants to call us  => offer = "+ offer);
     connectedUser = name;
@@ -928,6 +994,12 @@ function onOffer(offer, name) {
  * room is created sucessfully.
  */
 function user_is_ready(val, peername) {
+
+    send({
+        type: "call_started",
+        name: localStorage.getItem("name"),
+        other_user: connectedUser
+    })
     if (val == true) {
         document.getElementById('divChatName_peername').innerHTML = peername;
 
@@ -1114,7 +1186,11 @@ fetch("https://localhost:5000/user", requestOptions)
         `<img src="https://www.shutterstock.com/image-vector/avatar-man-icon-symbol-simple-260nw-1701935266.jpg" class='friend-pic rounded-circle' />`+
         "</div>" +
         // "<button id = 'callBtn' class = 'btn-success btn'>" 
-        "<div class='col-md-7' style='cursor:pointer;' onclick='request_call(\"" + users[i].name + "\")'>" +
+        "<div class='col-md-4' >" +
+        "<div class='col-md-3' >" +
+        "<button  class = 'btn-info btn' onclick='request_call(\"" + users[i].name + "\")'>" + 'Video Call' + "</button>" +
+        "<button  class = 'btn-success btn' onclick='request_voice_call(\"" + users[i].name + "\")'>" + 'Voice Call' + "</button>" +
+        "</div>" +
         "<div class='name'>" + users[i].name + "</div>" +
          "<div class='under-name'><span id=online_status_"+slugify(users[i].name)+" class='indicator'></span>" + users[i].name + "</div>" +
         "</div>" +
@@ -1258,38 +1334,7 @@ var callBtn = document.querySelector('#callBtn');
 
 
 /* START: Register user for first time i.e. Prepare ground for webrtc call to happen */
-function handleLogin(success,allUsers) { 
-  if (success === false) { 
-    alert("Ooops...try a different username"); 
-  } 
-  else { 
-    alert('welcome...')
-    // var allAvailableUsers = allUsers.join();
-    // console.log('All available users',allAvailableUsers)
-    // showAllUsers.innerHTML = 'Available users: '+allAvailableUsers;
 
-
-    var constraints = {
-        video: true,
-        audio: true
-      };
-    
-      /* START:The camera stream acquisition */
-      if(navigator.mediaDevices.getUserMedia) {
-       navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
-      } else {
-        alert('Your browser does not support getUserMedia API');
-      }
-
-      document.getElementById('otherElements').hidden = false;
-
-    // Update_user_status("clientuser_status","online");
-    // document.getElementById('signupStart').setAttribute('style', 'display:none');
-
-
-  /* END:The camera stream acquisition */
-  }
-}
 /* END: Register user for first time i.e. Prepare ground for webrtc call to happen */
 
 

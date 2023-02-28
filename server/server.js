@@ -20,6 +20,8 @@ const appRoutes = require('../routes/app');
 
 const User = require("../model/user");
 
+const log = require('../model/log');
+
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/app", appRoutes);
@@ -59,6 +61,7 @@ const httpsServer = https.createServer(serverConfig, app);
 httpsServer.listen(HTTPS_PORT, '0.0.0.0');
 
 const WebSocket = require('ws');
+const strat_time = require('../model/strat_time');
 const WebSocketServer = WebSocket.Server;
 const wss = new WebSocketServer({server: httpsServer});
 
@@ -120,11 +123,11 @@ wss.on('connection', function (connection) {
 						else if (conn.otherName == null) {
 							/* When user is free and availble for the offer */
 							/* Send the offer to peer user */
-							sendTo(conn, { type: "server_offer", offer: data.offer, name: connection.name });
+							sendTo(conn, { type: "server_offer", offer: data.offer, name: connection.name , offerType:data.offerType});
 						}
 						else {
 							/* User has in the room, User is can't accept the offer */
-							sendTo(connection, { type: "server_alreadyinroom", success: true, name: data.name });
+							sendTo(connection, { type: "server_alreadyinroom", success: true, name: data.name , offerType:data.offerType });
 						}
 					}
 					else {
@@ -294,6 +297,64 @@ wss.on('connection', function (connection) {
 					}
 	
 					break;
+
+					case "notResponse":
+						// save it to mongodb
+					
+				const logdata = new log({message: 'not responsed', type: 'notResponse', name: data.name, from: data.other_user});
+				logdata.save((err, data) => {
+						if (err) {
+						console.error(err);
+						}
+						console.log(data);
+					});
+
+					break;
+
+					case "call_started" :
+
+					// save current time to mongodb
+					
+					var start = new strat_time({start_time: new Date(), name: data.name})
+					start.save((err, data) => {
+						if (err) {
+						console.error(err);
+						}
+						console.log(data);
+					});
+
+					
+
+
+
+
+					break;
+
+					case "call_leaved" :
+
+					let startTime = strat_time.findOne({name: data.name}, function (err, time) {
+						if (err) {
+							console.error(err);
+						}
+						console.log('time', time)
+						var logedata = new log({message: 'call details', start_time: time.start_time,type: 'time', name: data.name, from: data.other_user , end_time: new Date()});
+
+						logedata.save((err, data) => {
+							if (err) {
+							console.error(err);
+							}
+							console.log(data);
+						});
+						time.remove()
+					});
+
+					
+					
+	
+
+
+					break;
+
 	
 					/* default */
 				default:

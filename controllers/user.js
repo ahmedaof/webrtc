@@ -1,6 +1,5 @@
 const User = require('../model/user');
 exports.getAllUser = (req, res) => {
-  // get all user from mongodb
     User.find({app:req.user.app}).exec((err, users) => {
         if (err) {
             return res.status(400).json({

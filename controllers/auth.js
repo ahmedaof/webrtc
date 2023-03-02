@@ -64,11 +64,16 @@ exports.signin = (req, res) => {
         res.cookie('t', token, { expire: new Date() + 9999 });
         // return response with user and token to frontend client
         const { _id, name, email, role , app} = user;
+        user.token=token;
+        user.save()
         return res.json({ token, user: { _id, email, name, role ,app} });
     });
 };
 
 exports.signout = (req, res) => {
+    req.user.update({$unset : {token :1}},function(err,user){
+        if(err) return err;
+    })
     res.clearCookie('t');
     res.json({ message: 'Signout success' });
 };
@@ -95,6 +100,51 @@ exports.isAdmin = (req, res, next) => {
         });
     }
     next();
+};
+
+exports.findByToken=function(token,cb){
+    var user=this;
+
+    jwt.verify(token,confiq.SECRET,function(err,decode){
+        user.findOne({"_id": decode, "token":token},function(err,user){
+            if(err) return cb(err);
+            cb(null,user);
+        })
+    })
+};
+
+exports.resetPassword = (req, res) => {
+    if(!req.user) return res.status(400).json({error:"User not found"});
+    if(!req.body.old_password) return res.status(400).json({error:"Old password is required"});
+    if(!req.body.new_password) return res.status(400).json({error:"New password is required"});
+    const { old_password, new_password } = req.body;
+    User.findOne({ _id: req.user._id }, (err, user) => {
+        if (err || !user) {
+            return res.status(400).json({
+                error: 'User with that email does not exist. Please signup'
+            });
+        }
+        // if user is found make sure the email and password match
+        // create authenticate method in user model
+        if (!user.authenticate(old_password)) {
+            return res.status(401).json({
+                error: 'Old password is incorrect'
+            });
+        }
+        user.password = new_password;
+        user.save((err, user) => {
+            if (err) {
+                return res.status(400).json({
+                    error: 'Password reset failed'
+                });
+            }
+            user.salt = undefined;
+            user.hashed_password = undefined;
+            res.json({
+                user
+            });
+        });
+    });
 };
 
 /**

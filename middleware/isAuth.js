@@ -14,6 +14,9 @@ const isAuthenticated = async (req,res,next)=>{
         }
         const verify =  jwt.verify(token,process.env.JWT_SECRET);
         req.user = await userModel.findById(verify._id);
+        if(req.user.token !== token){
+            return res.status(400).json({message:"Wrong credentials"});
+        }
         console.log(req.user);
         next();
     }else{

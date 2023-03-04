@@ -375,7 +375,6 @@ function Create_DataChannel(name) {
 
         console.log("creating offer ---");
         console.log("offer = "+ peerConnection.localDescription);
-        alert("type")
         send({
             type: "offer",
             offer: offer

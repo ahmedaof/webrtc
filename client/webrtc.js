@@ -222,14 +222,14 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("https://voiptecworlds.online:3000/auth/signin", requestOptions)
+fetch(`https://${window.location.hostname}:3000/auth/signin`, requestOptions)
   .then(response => response.text())
   .then(result => {JSON.parse(result).error ? alert(JSON.stringify(JSON.parse(result).error)) :
 
 
   send({
      type: "login",
-     name: JSON.parse(result).user.name
+     name: JSON.parse(result).user._id
    })
 
    localStorage.setItem("token",JSON.parse(result).token)
@@ -1173,7 +1173,7 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("https://voiptecworlds.online:3000/user", requestOptions)
+fetch(`https://${window.location.hostname}:3000/user`, requestOptions)
 .then(response => response.text())
 .then(async(result) =>
 {
@@ -1189,11 +1189,11 @@ fetch("https://voiptecworlds.online:3000/user", requestOptions)
         // "<button id = 'callBtn' class = 'btn-success btn'>" 
         "<div class='col-md-4' >" +
         "<div class='col-md-3' >" +
-        "<button  class = 'btn-info btn' onclick='request_call(\"" + users[i].name + "\")'>" + 'Video Call' + "</button>" +
-        "<button  class = 'btn-success btn' onclick='request_voice_call(\"" + users[i].name + "\")'>" + 'Voice Call' + "</button>" +
+        "<button  class = 'btn-info btn' onclick='request_call(\"" + users[i]._id + "\")'>" + 'Video Call' + "</button>" +
+        "<button  class = 'btn-success btn' onclick='request_voice_call(\"" + users[i]._id + "\")'>" + 'Voice Call' + "</button>" +
         "</div>" +
         "<div class='name'>" + users[i].name + "</div>" +
-         "<div class='under-name'><span id=online_status_"+slugify(users[i].name)+" class='indicator'></span>" + users[i].name + "</div>" +
+         "<div class='under-name'><span id=online_status_"+slugify(users[i]._id)+" class='indicator'></span>" + users[i].name + "</div>" +
         "</div>" +
         "<div class='col-md-3 mt-3 video-icon' onclick='video_user(\"" + users[i].name + "\")'>" + '<i class="fas fa-video"></i>' + "</div>" +
         "</div>" +

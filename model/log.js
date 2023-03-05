@@ -26,6 +26,11 @@ const logSchema = new mongoose.Schema(
         },
         end_time: {
             type: Date,
+        },
+        endedBy: {
+            type: String,
+            trim: true,
+            required: false,
         }
             
     },

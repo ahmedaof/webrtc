@@ -293,7 +293,7 @@ wss.on('connection', function (connection) {
 							return;
 						}
 
-						var logedata = new log({message: 'call details', start_time: time.start_time,type: 'time', name: data.name, from: connection.name , end_time: new Date()});
+						var logedata = new log({message: 'call details', start_time: time.start_time,type: 'time', name: data.name, from: connection.name , endedBy: connection.name, end_time: new Date()});
 
 						logedata.save((err, data) => {
 							if (err) {
@@ -319,7 +319,7 @@ wss.on('connection', function (connection) {
 					case "notResponse":
 						// save it to mongodb
 					
-				const logdata = new log({message: 'not responsed', type: 'notResponse', name: data.name, from: data.other_user});
+				const logdata = new log({message: 'not responsed', type: 'notResponse', name: data.name, from: data.other_user });
 				logdata.save((err, data) => {
 						if (err) {
 						console.error(err);
@@ -415,7 +415,7 @@ wss.on('connection', function (connection) {
 					conn.otherName = null;
 					connection.otherName = null;
 					/* Send the response back to peer user */
-					sendTo(conn, { type: "server_exitfrom" });
+					// sendTo(conn, { type: "server_exitfrom" });
 					map.set(conn.name,'online');
 				}
 			}

@@ -233,7 +233,7 @@ fetch(`https://${window.location.hostname}:3000/auth/signin`, requestOptions)
    })
 
    localStorage.setItem("token",JSON.parse(result).token)
-   localStorage.setItem("name",JSON.parse(result).user.name)
+   localStorage.setItem("name",JSON.parse(result).user._id)
  
   })
   .catch(error => alert('Email or password is incorrect'));
@@ -497,17 +497,17 @@ $('#modalNotificationList').on('show.bs.modal', function () {
  * it will be forcefully remove from screen and update to user.
  */
 $('#incoming_call_Modal').on('show.bs.modal', function () {
+    let name = localStorage.getItem("name");
     var myModal = $(this);
     clearTimeout(myModal.data('hideInterval'));
     myModal.data('hideInterval', setTimeout(function () {
         // send the reject message to server with user name and other user name
-        alert('reject call from modal popup name: ' + localStorage.getItem("name") + ' other user: ' + connectedUser );
-        send({
-            type: "notResponse",
-            name: localStorage.getItem("name"),
-            other_user: connectedUser
-        });
         if (chat_window_flag != true && incoming_popup_set == true) {
+            send({
+                type: "notResponse",
+                name,
+                other_user: connectedUser
+            });
             myModal.modal('hide').data('bs.modal', null);
             populate_error("noresponse");
             outgoing_popup_set = false;
@@ -658,9 +658,10 @@ function Create_Popup_Notifications() {
  * user has left from the Browser/Connection (If user already in call)
  */
 function left_from_server() {
+    let name = localStorage.getItem("name");
     send({
-        type: "call_leaved",
-        name: localStorage.getItem("name"),
+        type: "quit",
+        name,
         other_user: connectedUser
     })
     if (chat_window_flag == true) {
@@ -731,8 +732,8 @@ function Delete_webrtc_connection()
     }
 
     /* close the RTCpeerConnection */
-    peerConnection.close();
-    peerConnection = null;
+    yourConn.close();
+    yourConn = null;
 }
 /**
  * This function will handle UI when other user reject the webRTC offer.
@@ -812,9 +813,7 @@ function reject_answer() {
  */
 function Leaveroom() {
 
-    send({
-        type: "leave"
-    });
+    left_from_server();
 }
 /**
  * This function will send offer to peer user 
@@ -994,10 +993,10 @@ function onOffer(offer, name , offerType) {
  * room is created sucessfully.
  */
 function user_is_ready(val, peername) {
-
+  let name = localStorage.getItem("name")
     send({
         type: "call_started",
-        name: localStorage.getItem("name"),
+        name,
         other_user: connectedUser
     })
     if (val == true) {
@@ -1495,4 +1494,28 @@ function handleLeave() {
   console.log('connection state after',connectionState1)
   console.log('signalling state after',signallingState1)
 };
+
+
+function logout(){
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${localStorage.getItem('token')}`);
+    myHeaders.append("Content-Type", "application/json");
+
+
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'
+};
+
+fetch(`https://${window.location.hostname}:3000/auth/signout`, requestOptions)
+  .then(response => response.text())
+  .then(result => {
+    console.log('result', result)
+    localStorage.removeItem('token');
+    window.location.reload();
+    })
+  .catch(error => console.log('error', error));
+}
 

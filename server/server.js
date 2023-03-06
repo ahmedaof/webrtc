@@ -125,10 +125,7 @@ wss.on('connection', function (connection) {
 							/* Send the offer to peer user */
 							sendTo(conn, { type: "server_offer", offer: data.offer, name: connection.name , offerType:data.offerType});
 						}
-						else {
-							/* User has in the room, User is can't accept the offer */
-							sendTo(connection, { type: "server_alreadyinroom", success: true, name: data.name , offerType:data.offerType });
-						}
+						
 					}
 					else {
 						/* Error handling with invalid query */

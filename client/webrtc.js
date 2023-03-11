@@ -929,7 +929,8 @@ function call_user(name,type) {
        send({
           type: "offer", 
           offer: offer ,
-          offerType:type
+          offerType:type,
+          current_name:localStorage.getItem('name')
        }); 
     
        yourConn.setLocalDescription(offer); 

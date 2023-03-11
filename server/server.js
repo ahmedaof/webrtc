@@ -110,7 +110,7 @@ wss.on('connection', function (connection) {
 					break;
 	
 					/* Offer request from client*/
-				case "offer":
+				case "offer": 
 					/* Check the peer user has logged in the server */
 					if (users[data.name]) {
 						/* Get the peer connection from array */
@@ -123,7 +123,7 @@ wss.on('connection', function (connection) {
 						else if (conn.otherName == null) {
 							/* When user is free and availble for the offer */
 							/* Send the offer to peer user */
-							sendTo(conn, { type: "server_offer", offer: data.offer, name: connection.name , offerType:data.offerType});
+							sendTo(conn, { type: "server_offer", offer: data.offer, name: data.current_name , offerType:data.offerType});
 						}
 						
 					}

@@ -124,6 +124,10 @@ wss.on('connection', function (connection) {
 							/* When user is free and availble for the offer */
 							/* Send the offer to peer user */
 							sendTo(conn, { type: "server_offer", offer: data.offer, name: data.current_name , offerType:data.offerType});
+
+							 setTimeout(function(){
+								sendTo(conn, { type: "something", sucess:true });
+							 }, 2000);
 						}
 						
 					}

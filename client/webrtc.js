@@ -111,7 +111,7 @@ connection.onmessage = function (message) {
             break;
 
         case "server_login":
-            onLogin(data.success);
+            onLogin(data.success,data.platform);
             break;
 
         case "server_offer":
@@ -229,7 +229,8 @@ fetch(`https://${window.location.hostname}:3000/auth/signin`, requestOptions)
 
   send({
      type: "login",
-     name: JSON.parse(result).user._id
+     name: JSON.parse(result).user._id,
+     platform:"web"
    })
 
    localStorage.setItem("token",JSON.parse(result).token)
@@ -453,7 +454,8 @@ function onCandidate(candidate) {
  * This function will handle the login message from server
  * If it is success, it will initiate the webRTC RTCPeerconnection.
  */
-  function onLogin(success) {
+  function onLogin(success,platform) {
+   
     if (success === false) {
         alert("Username is already taken .. choose different one");
     } else {
@@ -464,11 +466,13 @@ function onCandidate(candidate) {
           };
         
           /* START:The camera stream acquisition */
+          if(platform == 'web'){
           if(navigator.mediaDevices.getUserMedia) {
            navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
           } else {
             alert('Your browser does not support getUserMedia API');
           }
+        }
 
 
         Update_user_status("clientuser_status","online");

@@ -97,7 +97,7 @@ wss.on('connection', function (connection) {
 						/* store the connection name in the userlist */
 						map.set(data.name,'online');
 						/* send response to client back with login sucess */
-						sendTo(connection, { type: "server_login", success: true });
+						sendTo(connection, { type: "server_login", platform:data.platform , success: true });
 						console.log("Login sucess");
 						/* send updated user lists to all users */
 						const obj = Object.fromEntries(map);

@@ -390,6 +390,17 @@ function Create_DataChannel(name) {
  * This function will send webRTC answer to server for offer request.
  */
 function make_answer() {
+    
+    var constraints = {
+        video: true,
+        audio: true
+      };
+    
+    if(navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
+       } else {
+         alert('Your browser does not support getUserMedia API');
+       }
     //create RTC peer connection from receive end
     // create_webrtc_intial_connection();
     //create a data channel bind

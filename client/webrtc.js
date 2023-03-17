@@ -397,7 +397,18 @@ function make_answer() {
       };
     
     if(navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
+        navigator.mediaDevices.getUserMedia(constraints).then(
+            function(stream) {
+                localStream = stream;
+                localVideo.srcObject = stream;
+                yourConn = new RTCPeerConnection(peerConnectionConfig);
+              
+                connectionState = yourConn.connectionState;
+                yourConn.ontrack =  gotRemoteStream;
+                yourConn.addStream(localStream);
+            }
+
+        ).catch(errorHandler);
        } else {
          alert('Your browser does not support getUserMedia API');
        }
@@ -1366,6 +1377,8 @@ var callBtn = document.querySelector('#callBtn');
   yourConn = new RTCPeerConnection(peerConnectionConfig);
 
   connectionState = yourConn.connectionState;
+  yourConn.ontrack =  gotRemoteStream;
+  yourConn.addStream(localStream);
   console.log('connection state inside getusermedia',connectionState)
   yourConn.onicecandidate = function (event) {     
       console.log('onicecandidate inside getusermedia success', event.candidate)
@@ -1376,8 +1389,7 @@ var callBtn = document.querySelector('#callBtn');
             }); 
         } 
     }; 
-    yourConn.ontrack =  gotRemoteStream;
-    yourConn.addStream(localStream);
+ 
 }
 
 

@@ -150,11 +150,11 @@ wss.on('connection', function (connection) {
 
 					var conn = users[data.name];
 		
-					// if (conn != null) {
+					if (conn != null) {
 						/* Send the answer back to requested user */
 						sendTo(conn, { type: "server_answer", answer: data.answer });
 						sendTo(connection, { type: "server_answer", answer: data.answer });
-					// }
+					}
 
 					// console.log("Sending answer to: ", data.name); 
 					// //for ex. UserB answers UserA 

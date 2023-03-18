@@ -412,10 +412,7 @@ function make_answer() {
        } else {
          alert('Your browser does not support getUserMedia API');
        }
-    //create RTC peer connection from receive end
-    // create_webrtc_intial_connection();
-    //create a data channel bind
-    // yourConn.ondatachannel = receiveChannelCallback;
+
     yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
     creating_answer();
 }

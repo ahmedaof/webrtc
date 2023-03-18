@@ -396,9 +396,9 @@ function make_answer() {
         audio: true
       };
     
-    if(navigator.mediaDevices.getUserMedia) {
+    // if(navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia(constraints).then(
-            function(stream) {
+            (stream) => {
                 localStream = stream;
                 localVideo.srcObject = stream;
                 yourConn = new RTCPeerConnection(peerConnectionConfig);
@@ -406,20 +406,26 @@ function make_answer() {
                 connectionState = yourConn.connectionState;
                 yourConn.ontrack =  gotRemoteStream;
                 yourConn.addStream(localStream);
+                creating_answer();
             }
+            
+            ).catch(errorHandler);
+            
 
-        ).catch(errorHandler);
-       } else {
-         alert('Your browser does not support getUserMedia API');
-       }
 
-    yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
-    creating_answer();
 }
 /**
  * This function will create the webRTC answer for offer.
  */
 function creating_answer() {
+
+    // get track and setRemoteDescription
+
+
+    //  yourConn = new RTCPeerConnection(peerConnectionConfig);
+              
+    // connectionState = yourConn.connectionState; 
+    yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
 
     yourConn.createAnswer()
     .then(function(answer) {

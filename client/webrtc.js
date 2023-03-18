@@ -437,10 +437,11 @@ function creating_answer() {
             type: "answer",
             answer: conn_answer
         });
+        // clear_incoming_modal_popup();
+        user_is_ready(true,localStorage.getItem("name")) /*remove modal when any error occurs */
     })
     .catch(function(err) {
         alert("answer is failed");
-        clear_incoming_modal_popup(); /*remove modal when any error occurs */
   });
 }
 /**

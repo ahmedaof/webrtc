@@ -396,7 +396,7 @@ function make_answer() {
         audio: true
       };
     
-    // if(navigator.mediaDevices.getUserMedia) {
+    if(navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia(constraints).then(
             (stream) => {
                 localStream = stream;
@@ -413,6 +413,9 @@ function make_answer() {
             
 
 
+}else{
+    alert("Your browser does not support getUserMedia API");
+}
 }
 /**
  * This function will create the webRTC answer for offer.

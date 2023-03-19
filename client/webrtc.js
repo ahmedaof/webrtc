@@ -390,8 +390,10 @@ function Create_DataChannel(name) {
  * This function will send webRTC answer to server for offer request.
  */
 function make_answer() {
+    if(!yourConn) {
     yourConn = new RTCPeerConnection(peerConnectionConfig);
-    
+    yourConn.onicecandidate = icecandidateAdded;
+    }
     yourConn.ondatachannel = receiveChannelCallback;
     yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
     creating_answer();

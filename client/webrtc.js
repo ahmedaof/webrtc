@@ -390,32 +390,11 @@ function Create_DataChannel(name) {
  * This function will send webRTC answer to server for offer request.
  */
 function make_answer() {
+    yourConn = new RTCPeerConnection(peerConnectionConfig);
     
-    var constraints = {
-        video: true,
-        audio: true
-      };
-    
-    if(navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia(constraints).then(
-            (stream) => {
-                localStream = stream;
-                localVideo.srcObject = stream;
-                yourConn = new RTCPeerConnection(peerConnectionConfig);
-              
-                connectionState = yourConn.connectionState;
-                yourConn.ontrack =  gotRemoteStream;
-                yourConn.addStream(localStream);
-                creating_answer();
-            }
-            
-            ).catch(errorHandler);
-            
-
-
-}else{
-    alert("Your browser does not support getUserMedia API");
-}
+    yourConn.ondatachannel = receiveChannelCallback;
+    yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
+    creating_answer();
 }
 /**
  * This function will create the webRTC answer for offer.

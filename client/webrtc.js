@@ -393,6 +393,8 @@ function make_answer() {
     //create RTC peer connection from receive end
     // create_webrtc_intial_connection();
     //create a data channel bind
+    connectionState = yourConn.connectionState;
+    console.log('connection state inside getusermedia',connectionState)
     yourConn.ondatachannel = receiveChannelCallback;
     yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
     creating_answer();

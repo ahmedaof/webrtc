@@ -417,6 +417,7 @@ function creating_answer() {
         alert("answer is failed");
         clear_incoming_modal_popup(); /*remove modal when any error occurs */
   });
+  user_is_ready(true,'test')
 }
 /**
  * This function will handle when another user answers to our offer .
@@ -999,11 +1000,11 @@ function onOffer(offer, name , offerType) {
  */
 function user_is_ready(val, peername) {
   let name = localStorage.getItem("name")
-    send({
-        type: "call_started",
-        name,
-        other_user: connectedUser
-    })
+    // send({
+    //     type: "call_started",
+    //     name,
+    //     other_user: connectedUser
+    // })
     if (val == true) {
         document.getElementById('divChatName_peername').innerHTML = peername;
 

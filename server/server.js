@@ -158,6 +158,7 @@ wss.on('connection', function (connection) {
 					}else{
 						console.log("answer request from client2222222");
 						sendTo(connection, { type: "server_answer", answer: data.answer });
+						sendTo(conn, { type: "server_answer", answer: data.answer });
 
 					}
 

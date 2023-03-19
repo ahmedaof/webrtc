@@ -92,6 +92,7 @@ wss.on('connection', function (connection) {
 					} else {
 						/* store the connection details */
 						users[data.name] = connection;
+						var dataName = users[data.name];
 						connection.name = data.name;
 						connection.otherName = null;
 						/* store the connection name in the userlist */
@@ -148,11 +149,11 @@ wss.on('connection', function (connection) {
 	
 					// break;
 
-					var conn = users[data.name];
+					
 		
-					if (conn != null) {
+					if (dataName != null) {
 						/* Send the answer back to requested user */
-						sendTo(conn, { type: "server_answer", answer: data.answer });
+						sendTo(dataName, { type: "server_answer", answer: data.answer });
 					}else{
 						sendTo(connection, { type: "server_answer", answer: data.answer });
 

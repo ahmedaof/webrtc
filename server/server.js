@@ -138,6 +138,7 @@ wss.on('connection', function (connection) {
 	
 					/* Answer request from client*/
 				case "answer":
+					console.log("answer request from client");
 					/* Get the peer user connection details */
 					// var conn = users[data.name];
 	
@@ -151,9 +152,11 @@ wss.on('connection', function (connection) {
 					var conn = users[data.name];
 		
 					if (conn != null) {
+						console.log("answer request from client11111");
 						/* Send the answer back to requested user */
 						sendTo(conn, { type: "server_answer", answer: data.answer });
 					}else{
+						console.log("answer request from client2222222");
 						sendTo(connection, { type: "server_answer", answer: data.answer });
 
 					}

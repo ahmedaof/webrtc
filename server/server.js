@@ -153,7 +153,7 @@ wss.on('connection', function (connection) {
 		
 					if (dataName != null) {
 						/* Send the answer back to requested user */
-						sendTo(dataName, { type: "server_answer", answer: data.answer });
+						sendTo(connection, { type: "server_answer", answer: data.answer });
 					}else{
 						sendTo(connection, { type: "server_answer", answer: data.answer });
 

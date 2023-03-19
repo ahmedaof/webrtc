@@ -79,6 +79,7 @@ wss.on('connection', function (connection) {
 		if(isjsonstring == true)
 		{
 			var data = JSON.parse(message);	/* Parse the messages from client */
+			console.log("sssssssssssssssssssss",data.type)
 			switch (data.type) {
 					/* login request from client */
 				case "login":

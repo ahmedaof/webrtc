@@ -403,10 +403,10 @@ async function make_answer() {
 async function creating_answer() {
 
    await yourConn.createAnswer()
-    .then(function(answer) {
+    .then(async (answer) => {
        
 
-        yourConn.setLocalDescription(answer);
+       await yourConn.setLocalDescription(answer);
         conn_answer = answer;
         send({
             type: "answer",

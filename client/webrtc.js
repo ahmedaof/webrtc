@@ -368,15 +368,15 @@ function Create_DataChannel(name) {
 /**
  * This function will create the webRTC offer request for other user.
  */
- function creating_offer() {
+ async function creating_offer() {
     document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Requesting with user .. Please wait..");
     try {
-        const offer =  peerConnection.createOffer({iceRestart:true});
+        const offer = await peerConnection.createOffer({iceRestart:true});
          peerConnection.setLocalDescription(offer);
 
         console.log("creating offer ---");
         console.log("offer = "+ peerConnection.localDescription);
-        send({
+       await send({
             type: "offer",
             offer: offer
         });
@@ -389,20 +389,20 @@ function Create_DataChannel(name) {
 /**
  * This function will send webRTC answer to server for offer request.
  */
-function make_answer() {
+async function make_answer() {
     //create RTC peer connection from receive end
     // create_webrtc_intial_connection();
     //create a data channel bind
     yourConn.ondatachannel = receiveChannelCallback;
-    yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
+   await yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
     creating_answer();
 }
 /**
  * This function will create the webRTC answer for offer.
  */
-function creating_answer() {
+async function creating_answer() {
 
-    yourConn.createAnswer()
+   await yourConn.createAnswer()
     .then(function(answer) {
        
 
@@ -421,7 +421,7 @@ function creating_answer() {
 /**
  * This function will handle when another user answers to our offer .
  */
- function onAnswer(answer) {
+  function onAnswer(answer) {
      console.log("when another user answers to  offer => answer = "+ answer);
     //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
      yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
@@ -433,9 +433,9 @@ function creating_answer() {
 /**
  * This function will handle when when we got ice candidate from another user.
  */
-function onCandidate(candidate) {
+async function onCandidate(candidate) {
         console.log("onCandidate => candidate = "+ candidate);
-        yourConn.addIceCandidate(new RTCIceCandidate(candidate));
+      await  yourConn.addIceCandidate(new RTCIceCandidate(candidate));
 }
 /**
  * This function will send the user message to server.
@@ -454,7 +454,7 @@ function onCandidate(candidate) {
  * This function will handle the login message from server
  * If it is success, it will initiate the webRTC RTCPeerconnection.
  */
-  function onLogin(success,platform) {
+async  function onLogin(success,platform) {
    
     if (success === false) {
         alert("Username is already taken .. choose different one");
@@ -468,7 +468,7 @@ function onCandidate(candidate) {
           /* START:The camera stream acquisition */
           if(platform == 'web'){
           if(navigator.mediaDevices.getUserMedia) {
-           navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
+        await navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
           } else {
             alert('Your browser does not support getUserMedia API');
           }
@@ -888,7 +888,7 @@ function request_voice_call(name) {
 //     else 
 //       alert("username can't be blank!")
 //   });
-function call_user(name,type) {
+async function call_user(name,type) {
     console.log('inside call button')
 
   
@@ -899,7 +899,7 @@ function call_user(name,type) {
     }
     else{
 
-        let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
+        let videoTrack = await localStream.getTracks().find(track => track.kind === 'video')
 
         if(videoTrack.enabled){
             videoTrack.enabled = false
@@ -921,15 +921,15 @@ function call_user(name,type) {
     console.log('nameToCall',connectedUser);
     console.log('create an offer to-',connectedUser)
     // yourConn = new RTCPeerConnection(peerConnectionConfig);
-    var connectionState2 = yourConn.connectionState;
+    var connectionState2 = await yourConn.connectionState;
     console.log('connection state before call beginning',connectionState2)
-    var signallingState2 = yourConn.signalingState;
+    var signallingState2 = await yourConn.signalingState;
   //console.log('connection state after',connectionState1)
   console.log('signalling state after',signallingState2)
 
  
 
-    yourConn.createOffer(function (offer) { 
+  await yourConn.createOffer(async (offer) => { 
        send({
           type: "offer", 
           offer: offer ,
@@ -937,7 +937,7 @@ function call_user(name,type) {
           current_name:localStorage.getItem('name')
        }); 
     
-       yourConn.setLocalDescription(offer); 
+       await yourConn.setLocalDescription(offer); 
     }, function (error) { 
        alert("Error when creating an offer",error); 
        console.log("Error when creating an offer",error)
@@ -969,12 +969,12 @@ function call_user(name,type) {
 /**
  * This function will handle when somebody wants to call us 
  */
-function onOffer(offer, name , offerType) {
+async function onOffer(offer, name , offerType) {
 
     if(offerType == 'voice')
     {
 
-        let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
+        let videoTrack = await localStream.getTracks().find(track => track.kind === 'video')
     
         if(videoTrack.enabled){
             videoTrack.enabled = false
@@ -1163,7 +1163,7 @@ function SendMessage() {
  * This function will populate the online userlist from the server.
 */
 
-function add_user_to_list(userArray){
+async function add_user_to_list(userArray){
     const map2 = new Map(userArray);
     document.getElementById('lstChat').innerHTML = ''
     var myHeaders = new Headers();
@@ -1176,7 +1176,7 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch(`https://${window.location.hostname}:3000/user`, requestOptions)
+await fetch(`https://${window.location.hostname}:3000/user`, requestOptions)
 .then(response => response.text())
 .then(async(result) =>
 {
@@ -1349,12 +1349,12 @@ var callBtn = document.querySelector('#callBtn');
 /* END: Register user for first time i.e. Prepare ground for webrtc call to happen */
 
 
- function getUserMediaSuccess(stream) {
+ async function getUserMediaSuccess(stream) {
   localStream = stream;
   localVideo.srcObject = stream;
-  yourConn = new RTCPeerConnection(peerConnectionConfig);
+  yourConn =await new RTCPeerConnection(peerConnectionConfig);
 
-  connectionState = yourConn.connectionState;
+  connectionState = await yourConn.connectionState;
   console.log('connection state inside getusermedia',connectionState)
   yourConn.onicecandidate = function (event) {     
       console.log('onicecandidate inside getusermedia success', event.candidate)
@@ -1366,7 +1366,7 @@ var callBtn = document.querySelector('#callBtn');
         } 
     }; 
     yourConn.ontrack =  gotRemoteStream;
-    yourConn.addStream(localStream);
+    await yourConn.addStream(localStream);
 }
 
 
@@ -1458,9 +1458,9 @@ declineBtn.addEventListener("click", function () {
 /*Call decline functionality ends */
 };
 
- function gotRemoteStream(event) {
+ async function gotRemoteStream(event) {
   console.log('got remote stream');
-  remoteVideo.srcObject = event.streams[0];
+  remoteVideo.srcObject = await event.streams[0];
 }
 
 function errorHandler(error) {
@@ -1475,8 +1475,8 @@ function handleAnswer(answer) {
 };
 
 //when we got an ice candidate from a remote user 
-function handleCandidate(candidate) { 
-  yourConn.addIceCandidate(new RTCIceCandidate(candidate)); 
+async function handleCandidate(candidate) { 
+ await yourConn.addIceCandidate(new RTCIceCandidate(candidate)); 
 };
 
 //hang up

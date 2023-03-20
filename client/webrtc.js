@@ -1301,12 +1301,17 @@ function Update_user_status(id_name, value)
  ********************************************************************/
 
 var peerConnectionConfig = {
-   
-    iceServers:[
-        {
-            urls:['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302']
-        }
-    ]
+    'sdpSemantics': 'unified-plan',
+  'iceServers': [
+    {
+        "urls": "stun:stun.ourcodeworld.com:5349"
+    },
+    {
+        urls: 'turn:turn.ourcodeworld.com:5349',
+        credential: '12345',
+        username: 'brucewayne'
+    }
+  ]
 };
 
 

@@ -1304,10 +1304,10 @@ var peerConnectionConfig = {
     'sdpSemantics': 'unified-plan',
   'iceServers': [
     {
-        "urls": "stun:stun.voiptecworlds.online.com:5349"
+        "urls": "stun:stun.ourcodeworld.com:5349"
     },
     {
-        urls: 'turn:turn.voiptecworlds.online.com:5349',
+        urls: 'turn:turn.ourcodeworld.com:5349',
         credential: '12345',
         username: 'brucewayne'
     }

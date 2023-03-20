@@ -425,7 +425,14 @@ function creating_answer() {
      console.log("when another user answers to  offer => answer = "+ answer);
     //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
      yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
-    //  alert('ff')
+     
+
+    // add remote stream
+    remoteVideo.gotRemoteStream = function (e) {
+        remoteVideo.srcObject = e.stream;
+    };
+    // remoteVideo.srcObject = remoteStream;
+   
     send({
         type: "ready"
     });

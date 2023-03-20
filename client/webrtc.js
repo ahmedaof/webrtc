@@ -400,9 +400,9 @@ function make_answer() {
 /**
  * This function will create the webRTC answer for offer.
  */
-function creating_answer() {
+async function creating_answer() {
 
-    yourConn.createAnswer()
+   await yourConn.createAnswer()
     .then(function(answer) {
        
 
@@ -421,10 +421,10 @@ function creating_answer() {
 /**
  * This function will handle when another user answers to our offer .
  */
- function onAnswer(answer) {
+ async function onAnswer(answer) {
      console.log("when another user answers to  offer => answer = "+ answer);
     //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
-     yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
+   await  yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
 
     send({
         type: "ready"

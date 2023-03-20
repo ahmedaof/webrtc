@@ -37,7 +37,7 @@ app.get('/webrtc.js', (req, res) => {
    res.end(fs.readFileSync('client/webrtc.js'));
 })
 
-const HTTPS_PORT =  443;
+const HTTPS_PORT = process.env.API_PORT || 3000;
 
 /*******************************************************************
 *	Function Name	: webRTC signaling server

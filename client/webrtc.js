@@ -376,7 +376,7 @@ function Create_DataChannel(name) {
 
         console.log("creating offer ---");
         console.log("offer = "+ peerConnection.localDescription);
-       await send({
+        send({
             type: "offer",
             offer: offer
         });
@@ -390,41 +390,48 @@ function Create_DataChannel(name) {
  * This function will send webRTC answer to server for offer request.
  */
 async function make_answer() {
-    //create RTC peer connection from receive end
-    // create_webrtc_intial_connection();
-    //create a data channel bind
-    yourConn.ondatachannel = receiveChannelCallback;
-   await yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
-    creating_answer();
+    // Check if yourConn object is initialized and ondatachannel is set
+    if (yourConn && yourConn.ondatachannel) {
+        // Set the remote description
+        try {
+            await yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
+        } catch (error) {
+            console.error(`Failed to set remote description: ${error}`);
+            return;
+        }
+
+        // Call the creating_answer function
+        await creating_answer();
+    } else {
+        console.error("yourConn object is not initialized or ondatachannel is not set");
+    }
 }
 /**
  * This function will create the webRTC answer for offer.
  */
 async function creating_answer() {
-
-   await yourConn.createAnswer()
-    .then(function(answer) {
-       
-
+    try {
+        const answer = await yourConn.createAnswer();
         yourConn.setLocalDescription(answer);
         conn_answer = answer;
         send({
             type: "answer",
             answer: conn_answer
         });
-    })
-    .catch(function(err) {
-        alert("answer is failed");
-        clear_incoming_modal_popup(); /*remove modal when any error occurs */
-  });
+    } catch (error) {
+        alert("Failed to create answer");
+        clear_incoming_modal_popup();
+    }
 }
+
 /**
  * This function will handle when another user answers to our offer .
  */
   function onAnswer(answer) {
      console.log("when another user answers to  offer => answer = "+ answer);
     //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
-     yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
+ 
+    yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
     //  alert('ff')
     send({
         type: "ready"
@@ -454,31 +461,28 @@ async function onCandidate(candidate) {
  * This function will handle the login message from server
  * If it is success, it will initiate the webRTC RTCPeerconnection.
  */
-async  function onLogin(success,platform) {
-   
+async function onLogin(success, platform) {
     if (success === false) {
         alert("Username is already taken .. choose different one");
     } else {
-
         var constraints = {
             video: true,
             audio: true
-          };
+        };
         
-          /* START:The camera stream acquisition */
-          if(platform == 'web'){
-          if(navigator.mediaDevices.getUserMedia) {
-        await navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
-          } else {
-            alert('Your browser does not support getUserMedia API');
-          }
+        /* START:The camera stream acquisition */
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            getUserMediaSuccess(stream);
+        } catch (error) {
+            errorHandler(error);
         }
-
-
-        Update_user_status("clientuser_status","online");
+          
+        Update_user_status("clientuser_status", "online");
         document.getElementById('signupStart').setAttribute('style', 'display:none');
     }
 }
+
 /**
  * This jQuery function will check the modal popup.
  * If the popup is still avaible after 30 second , then

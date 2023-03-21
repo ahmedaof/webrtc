@@ -1289,14 +1289,41 @@ function Update_user_status(id_name, value)
  * End of file
  ********************************************************************/
 
+// var peerConnectionConfig = {
+//     'sdpSemantics': 'unified-plan',
+//   'iceServers': [
+//     {
+//         "urls": "stun:stun.voiptecworlds.online:5349"
+//     },
+//     {
+//         urls: 'turn:turn.voiptecworlds.online:5349',
+//         credential: 'ahmed',
+//         username: 'ahmed'
+//     }
+//   ]
+// //   "iceServers": [
+// //     {
+// //         "urls": "stun:stun.sipglobalphone.com:3478"
+// //     }
+// // ]
+// };
 var peerConnectionConfig = {
-        "iceServers": [
-            {
-                "urls": "stun:stun.sipglobalphone.com:3478"
-            }
-        ]
-  
-};
+    'iceServers': [
+      {
+        'urls': 'stun:stun.l.google.com:19302'
+      },
+      {
+        'urls': 'turn:192.158.29.39:3478?transport=udp',
+        'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+        'username': '28224511:1379330808'
+      },
+      {
+        'urls': 'turn:192.158.29.39:3478?transport=tcp',
+        'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+        'username': '28224511:1379330808'
+      }
+    ]
+  }
 
 
 

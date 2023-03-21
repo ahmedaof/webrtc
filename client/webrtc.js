@@ -1313,11 +1313,10 @@ var peerConnectionConfig = {
         'urls': 'stun:stun.l.google.com:19302'
       },
       {
-        'urls': 'turn:relay1.expressturn.com:3478',
-        'credential': 'D0jgwnLrG8pOdcS3',
-        'username': 'efVB8DIFCUMVK0RLK0'
-      }
-
+        url: 'turn:192.158.29.39:3478?transport=udp',
+        credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+        username: '28224511:1379330808'
+    },
     ]
   }
 

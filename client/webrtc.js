@@ -9,7 +9,7 @@ var connectionState;
 var name; 
 var connectedUser;
 
- connection = new WebSocket(`wss://${window.location.hostname}:3000`);
+ connection = new WebSocket(`wss://${window.location.hostname}:5000`);
 
 
 var Send_dataChannel, peerConnection, connectedUser, Receive_dataChannel;
@@ -28,11 +28,10 @@ var id_wordflick;
  * This function will send ping request to server
  */
 
-
 var configuration = {
     "iceServers": [
         {
-            "urls": "stun:stun.voiptecworlds.online.com:5349"
+            "urls": "stun:stun.l.google.com:19302"
         }
     ]
 };
@@ -89,9 +88,6 @@ connection.onopen = function () {
  * This function will handle all the messages from server.
  * Main functiion to receive data from server.
  */
-
-
-window.addEventListener('beforeunload', left_from_server)
 connection.onmessage = function (message) {
 
     console.log("message from server = ", message.data);
@@ -106,11 +102,11 @@ connection.onmessage = function (message) {
             break;
 
         case "server_login":
-            onLogin(data.success,data.platform);
+            onLogin(data.success);
             break;
 
         case "server_offer":
-            onOffer(data.offer, data.name ,data.offerType);
+            onOffer(data.offer, data.name);
             break;
 
         case "server_answer":
@@ -195,49 +191,13 @@ connection.onmessage = function (message) {
      // stop form submission
      event.preventDefault();
      // handle the form data
-     var email_obj = form.elements['Email'];
-     var password_obj = form.elements['Password'];
-     password = password_obj.value; 
-     email = email_obj.value; 
-     
-
-
-        var myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
-
-var raw = JSON.stringify({
-  "email": email,
-  "password":password,
-});
-
-var requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-};
-
-fetch(`https://${window.location.hostname}:3000/auth/signin`, requestOptions)
-  .then(response => response.text())
-  .then(result => {JSON.parse(result).error ? alert(JSON.stringify(JSON.parse(result).error)) :
-
-
-  send({
-     type: "login",
-     name: JSON.parse(result).user._id,
-     platform:"web"
-   })
-
-   localStorage.setItem("token",JSON.parse(result).token)
-   localStorage.setItem("name",JSON.parse(result).user._id)
- 
-  })
-  .catch(error => alert('Email or password is incorrect'));
-    //  document.getElementById('divChatName_username').innerHTML = username;
-    //  send({
-    //      type: "login",
-    //      name: username
-    //  });
+     var username_obj = form.elements['Userame'];
+     username = username_obj.value; 
+     document.getElementById('divChatName_username').innerHTML = username;
+     send({
+         type: "login",
+         name: username
+     });
  });
 /*********************************************************************
  *  WebRTC related Functions (Creation of RTC peer connection, Offer, ICE, SDP, Answer etc..)
@@ -449,27 +409,21 @@ function onCandidate(candidate) {
  * This function will handle the login message from server
  * If it is success, it will initiate the webRTC RTCPeerconnection.
  */
-  function onLogin(success,platform) {
-   
+  function onLogin(success) {
     if (success === false) {
         alert("Username is already taken .. choose different one");
     } else {
-
         var constraints = {
             video: true,
             audio: true
           };
         
           /* START:The camera stream acquisition */
-          if(platform == 'web'){
           if(navigator.mediaDevices.getUserMedia) {
            navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
           } else {
             alert('Your browser does not support getUserMedia API');
           }
-        }
-
-
         Update_user_status("clientuser_status","online");
         document.getElementById('signupStart').setAttribute('style', 'display:none');
     }
@@ -496,17 +450,10 @@ $('#modalNotificationList').on('show.bs.modal', function () {
  * it will be forcefully remove from screen and update to user.
  */
 $('#incoming_call_Modal').on('show.bs.modal', function () {
-    let name = localStorage.getItem("name");
     var myModal = $(this);
     clearTimeout(myModal.data('hideInterval'));
     myModal.data('hideInterval', setTimeout(function () {
-        // send the reject message to server with user name and other user name
         if (chat_window_flag != true && incoming_popup_set == true) {
-            send({
-                type: "notResponse",
-                name,
-                other_user: connectedUser
-            });
             myModal.modal('hide').data('bs.modal', null);
             populate_error("noresponse");
             outgoing_popup_set = false;
@@ -657,12 +604,6 @@ function Create_Popup_Notifications() {
  * user has left from the Browser/Connection (If user already in call)
  */
 function left_from_server() {
-    let name = localStorage.getItem("name");
-    send({
-        type: "quit",
-        name,
-        other_user: connectedUser
-    })
     if (chat_window_flag == true) {
         Delete_webrtc_connection();
         //you are in a call
@@ -731,8 +672,8 @@ function Delete_webrtc_connection()
     }
 
     /* close the RTCpeerConnection */
-    yourConn.close();
-    yourConn = null;
+    peerConnection.close();
+    peerConnection = null;
 }
 /**
  * This function will handle UI when other user reject the webRTC offer.
@@ -812,7 +753,9 @@ function reject_answer() {
  */
 function Leaveroom() {
 
-    left_from_server();
+    send({
+        type: "leave"
+    });
 }
 /**
  * This function will send offer to peer user 
@@ -841,11 +784,7 @@ function video_user(name) {
 
 function request_call(name) {
     
-    call_user(name , 'video')
-}
-
-function request_voice_call(name) {
-    call_user(name , 'voice')
+    call_user(name)
 }
 
 
@@ -883,30 +822,8 @@ function request_voice_call(name) {
 //     else 
 //       alert("username can't be blank!")
 //   });
-function call_user(name,type) {
+function call_user(name) {
     console.log('inside call button')
-
-  
-    if(type == 'video')
-    {
-       
-
-    }
-    else{
-
-        let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
-
-        if(videoTrack.enabled){
-            videoTrack.enabled = false
-            localVideo.src = null;
-            localVideo.style.display = 'none';
-            remoteVideo.style.display = 'none';
-        }else{
-            videoTrack.enabled = true
-        }
-
-
-    }
 
     var callToUsername = name;
   
@@ -921,15 +838,10 @@ function call_user(name,type) {
     var signallingState2 = yourConn.signalingState;
   //console.log('connection state after',connectionState1)
   console.log('signalling state after',signallingState2)
-
- 
-
     yourConn.createOffer(function (offer) { 
        send({
           type: "offer", 
-          offer: offer ,
-          offerType:type,
-          current_name:localStorage.getItem('name')
+          offer: offer 
        }); 
     
        yourConn.setLocalDescription(offer); 
@@ -940,7 +852,7 @@ function call_user(name,type) {
     document.getElementById('callOngoing').style.display = 'block';
     document.getElementById('callInitiator').style.display = 'none';
 
-    } 
+  } 
   else 
     alert("username can't be blank!")
 
@@ -964,23 +876,7 @@ function call_user(name,type) {
 /**
  * This function will handle when somebody wants to call us 
  */
-function onOffer(offer, name , offerType) {
-
-    if(offerType == 'voice')
-    {
-
-        let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
-    
-        if(videoTrack.enabled){
-            videoTrack.enabled = false
-            localVideo.src = null;
-            localVideo.style.display = 'none';
-            remoteVideo.style.display = 'none';
-        }else{
-            videoTrack.enabled = true
-        }
-    }
-
+function onOffer(offer, name) {
 
     console.log("somebody wants to call us  => offer = "+ offer);
     connectedUser = name;
@@ -993,12 +889,6 @@ function onOffer(offer, name , offerType) {
  * room is created sucessfully.
  */
 function user_is_ready(val, peername) {
-  let name = localStorage.getItem("name")
-    send({
-        type: "call_started",
-        name,
-        other_user: connectedUser
-    })
     if (val == true) {
         document.getElementById('divChatName_peername').innerHTML = peername;
 
@@ -1157,76 +1047,6 @@ function SendMessage() {
 /**
  * This function will populate the online userlist from the server.
 */
-
-function add_user_to_list(userArray){
-    const map2 = new Map(userArray);
-    document.getElementById('lstChat').innerHTML = ''
-    var myHeaders = new Headers();
-myHeaders.append("Authorization", `Bearer ${localStorage.getItem('token')}`);
-myHeaders.append("Cookie", `t=${localStorage.getItem('token')}`);
-
-var requestOptions = {
-  method: 'GET',
-  headers: myHeaders,
-  redirect: 'follow'
-};
-
-fetch(`https://${window.location.hostname}:3000/user`, requestOptions)
-.then(response => response.text())
-.then(async(result) =>
-{
-    let users = await JSON.parse(result).users;
-    console.log(users);
-    for(let i=0;i<users.length;i++){
-
-        document.getElementById('lstChat').innerHTML += "<li class='list-group-item list-group-item-action'>" +
-        "<div class='row'>" +
-        "<div class='col-md-2'>" +
-        `<img src="https://www.shutterstock.com/image-vector/avatar-man-icon-symbol-simple-260nw-1701935266.jpg" class='friend-pic rounded-circle' />`+
-        "</div>" +
-        // "<button id = 'callBtn' class = 'btn-success btn'>" 
-        "<div class='col-md-4' >" +
-        "<div class='col-md-3' >" +
-        "<button  class = 'btn-info btn' onclick='request_call(\"" + users[i]._id + "\")'>" + 'Video Call' + "</button>" +
-        "<button  class = 'btn-success btn' onclick='request_voice_call(\"" + users[i]._id + "\")'>" + 'Voice Call' + "</button>" +
-        "</div>" +
-        "<div class='name'>" + users[i].name + "</div>" +
-         "<div class='under-name'><span id=online_status_"+slugify(users[i]._id)+" class='indicator'></span>" + users[i].name + "</div>" +
-        "</div>" +
-        "<div class='col-md-3 mt-3 video-icon' onclick='video_user(\"" + users[i].name + "\")'>" + '<i class="fas fa-video"></i>' + "</div>" +
-        "</div>" +
-        "</li>"
-
-        // Update_user_status(users[i].name,'online')
-        // Update_user_status(users[i].id, value);
-    }
-
-    let id = 0;
-    for (let [key, value] of map2) {
-
-                // if (username != key) { 
-                    var id_name = 'online_status_'+key; /* Used for dynamic id */
-                        console.log("ddddddddddd",key)
-                        console.log("ssssssssss",value)
-                    Update_user_status(slugify(id_name), value);    
-                    id++;   
-                // }
-            }
-  }
-    )
-  .catch(error => console.log('error', error));
-                                                        
-   
-}
-
-const slugify = str =>
-  str
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '_')
-    .replace(/^-+|-+$/g, '');
-
 function LoadOnlineUserList(username_array) {
     
     /* convert the json to Map */
@@ -1234,60 +1054,57 @@ function LoadOnlineUserList(username_array) {
     /* Count of online user -> server send all user list , we have to remove our name from that list */
     document.getElementById('onlineusers').innerHTML = '<span class="indicator label-success"></span>' +
                                                         'online users (' + (map2.size - 1) + ')';
-    document.getElementById('lstChat').innerHTML = '';
+    document.getElementById('lstChat').innerHTML = "";
 
-    // if (map2.size > 1) {
+    if (map2.size > 1) {
         
-    //     var id = 0;
+        var id = 0;
 
-    //     for (let [key, value] of map2) {
-    //         if (username != key) { 
-    //             var id_name = 'online_status_'+id; /* Used for dynamic id */
-    //             /*populate the sidebar online users list dynamically*/
-    //             document.getElementById('lstChat').innerHTML += "<li class='list-group-item list-group-item-action'>" +
-    //                 "<div class='row'>" +
-    //                 "<div class='col-md-2'>" +
-    //                 `<img src="https://www.shutterstock.com/image-vector/avatar-man-icon-symbol-simple-260nw-1701935266.jpg" class='friend-pic rounded-circle' />`+
-    //                 "</div>" +
-    //                 // "<button id = 'callBtn' class = 'btn-success btn'>" 
-    //                 "<div class='col-md-7' style='cursor:pointer;' onclick='request_call(\"" + key + "\")'>" +
-    //                 "<div class='name'>" + key + "</div>" +
-    //                 "<div class='under-name'><span id="+id_name+" class='indicator label-success'></span>" + value + "</div>" +
-    //                 "</div>" +
-    //                 "<div class='col-md-3 mt-3 video-icon' onclick='video_user(\"" + key + "\")'>" + '<i class="fas fa-video"></i>' + "</div>" +
-    //                 "</div>" +
-    //                 "</li>";
+        for (let [key, value] of map2) {
+            if (username != key) { 
+                var id_name = 'online_status_'+id; /* Used for dynamic id */
+                /*populate the sidebar online users list dynamically*/
+                document.getElementById('lstChat').innerHTML += "<li class='list-group-item list-group-item-action'>" +
+                    "<div class='row'>" +
+                    "<div class='col-md-2'>" +
+                    `<img src="https://www.shutterstock.com/image-vector/avatar-man-icon-symbol-simple-260nw-1701935266.jpg" class='friend-pic rounded-circle' />`+
+                    "</div>" +
+                    // "<button id = 'callBtn' class = 'btn-success btn'>" 
+                    "<div class='col-md-7' style='cursor:pointer;' onclick='request_call(\"" + key + "\")'>" +
+                    "<div class='name'>" + key + "</div>" +
+                    "<div class='under-name'><span id="+id_name+" class='indicator label-success'></span>" + value + "</div>" +
+                    "</div>" +
+                    "<div class='col-md-3 mt-3 video-icon' onclick='video_user(\"" + key + "\")'>" + '<i class="fas fa-video"></i>' + "</div>" +
+                    "</div>" +
+                    "</li>";
                     
-    //             Update_user_status(id_name, value);    
-    //             id++;   
-    //         }
-    //     }
-    // }
-    // else
-    // {
-    //         /* Only one user name present ie. only client */
-    //         if (map2.key == username) {
-    //             document.getElementById('lstChat').innerHTML = "";
-    //             console.log("single user = ", map2.key);
-    //         }
-    // }
-    // console.log(map2)
-    add_user_to_list(username_array);
+                Update_user_status(id_name, value);    
+                id++;   
+            }
+        }
+    }
+    else
+    {
+            /* Only one user name present ie. only client */
+            if (map2.key == username) {
+                document.getElementById('lstChat').innerHTML = "";
+                console.log("single user = ", map2.key);
+            }
+    }
 }
 function Update_user_status(id_name, value)
 {
-    console.log("update user status",id_name)
     switch(value)
     {
         /* handle the user status */
         case "online":
-            document.getElementById(id_name).classList.add('label-success');
+            document.getElementById(id_name).classList.replace('label-danger', 'label-success');
             break;
         case "busy":
             document.getElementById(id_name).classList.replace('label-success','label-danger'); 
             break;
         default:
-            document.getElementById(id_name).classList.remove('label-success');
+            document.getElementById(id_name).classList.add('label-success');
             break;
     }
 }
@@ -1298,17 +1115,10 @@ function Update_user_status(id_name, value)
 var peerConnectionConfig = {
     'sdpSemantics': 'unified-plan',
   'iceServers': [
-    {
-        "urls": "stun:stun.ourcodeworld.com:5349"
-    },
-    {
-        urls: 'turn:turn.ourcodeworld.com:5349',
-        credential: '12345',
-        username: 'brucewayne'
-    }
+    {'urls': 'stun:stun.stunprotocol.org:3478'},
+    {'urls': 'stun:stun.l.google.com:19302'},
   ]
 };
-
 
 
 
@@ -1340,7 +1150,38 @@ var callBtn = document.querySelector('#callBtn');
 
 
 /* START: Register user for first time i.e. Prepare ground for webrtc call to happen */
+function handleLogin(success,allUsers) { 
+  if (success === false) { 
+    alert("Ooops...try a different username"); 
+  } 
+  else { 
+    alert('welcome...')
+    // var allAvailableUsers = allUsers.join();
+    // console.log('All available users',allAvailableUsers)
+    // showAllUsers.innerHTML = 'Available users: '+allAvailableUsers;
 
+
+    var constraints = {
+        video: true,
+        audio: true
+      };
+    
+      /* START:The camera stream acquisition */
+      if(navigator.mediaDevices.getUserMedia) {
+       navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
+      } else {
+        alert('Your browser does not support getUserMedia API');
+      }
+
+      document.getElementById('otherElements').hidden = false;
+
+    // Update_user_status("clientuser_status","online");
+    // document.getElementById('signupStart').setAttribute('style', 'display:none');
+
+
+  /* END:The camera stream acquisition */
+  }
+}
 /* END: Register user for first time i.e. Prepare ground for webrtc call to happen */
 
 
@@ -1501,28 +1342,4 @@ function handleLeave() {
   console.log('connection state after',connectionState1)
   console.log('signalling state after',signallingState1)
 };
-
-
-function logout(){
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${localStorage.getItem('token')}`);
-    myHeaders.append("Content-Type", "application/json");
-
-
-
-var requestOptions = {
-  method: 'GET',
-  headers: myHeaders,
-  redirect: 'follow'
-};
-
-fetch(`https://${window.location.hostname}:3000/auth/signout`, requestOptions)
-  .then(response => response.text())
-  .then(result => {
-    console.log('result', result)
-    localStorage.removeItem('token');
-    window.location.reload();
-    })
-  .catch(error => console.log('error', error));
-}
 

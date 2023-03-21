@@ -32,12 +32,7 @@ var id_wordflick;
 var configuration = {
     "iceServers": [
         {
-            "urls": "stun:stun.ourcodeworld.com:5349"
-        },
-        {
-            urls: 'turn:turn.ourcodeworld.com:5349',
-            credential: '12345',
-            username: 'brucewayne'
+            "urls": "stun:stun.voiptecworlds.online.com:5349"
         }
     ]
 };

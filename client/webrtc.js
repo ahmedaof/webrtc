@@ -32,7 +32,7 @@ var id_wordflick;
 var configuration = {
     "iceServers": [
         {
-            "urls": "stun.voipfibre.com:3478"
+            "urls": "stun:stun.sipglobalphone.com:3478"
         }
     ]
 };

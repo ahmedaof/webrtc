@@ -29,13 +29,7 @@ var id_wordflick;
  */
 
 
-var configuration = {
-    "iceServers": [
-        {
-            "urls": "stun:stun.sipglobalphone.com:3478"
-        }
-    ]
-};
+
 
 function ping() {
     console.log("ping sending");
@@ -1296,17 +1290,12 @@ function Update_user_status(id_name, value)
  ********************************************************************/
 
 var peerConnectionConfig = {
-    'sdpSemantics': 'unified-plan',
-  'iceServers': [
-    {
-        "urls": "stun:stun.ourcodeworld.com:5349"
-    },
-    {
-        urls: 'turn:turn.ourcodeworld.com:5349',
-        credential: '12345',
-        username: 'brucewayne'
-    }
-  ]
+        "iceServers": [
+            {
+                "urls": "stun:stun.sipglobalphone.com:3478"
+            }
+        ]
+  
 };
 
 

@@ -1308,16 +1308,26 @@ function Update_user_status(id_name, value)
 // // ]
 // };
 var peerConnectionConfig = {
-    'iceServers': [
-      {
-        'urls': 'stun:stun.l.google.com:19302'
-      },
-      {
-        url: 'turn:192.158.29.39:3478?transport=udp',
-        credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-        username: '28224511:1379330808'
-    },
-    ]
+    iceServers: [
+        {
+          urls: "stun:relay.metered.ca:80",
+        },
+        {
+          urls: "turn:relay.metered.ca:80",
+          username: "4832dc1589b3f7c566f77a99",
+          credential: "UERPXLBK+gs6K9a8",
+        },
+        {
+          urls: "turn:relay.metered.ca:443",
+          username: "4832dc1589b3f7c566f77a99",
+          credential: "UERPXLBK+gs6K9a8",
+        },
+        {
+          urls: "turn:relay.metered.ca:443?transport=tcp",
+          username: "4832dc1589b3f7c566f77a99",
+          credential: "UERPXLBK+gs6K9a8",
+        },
+    ],
   }
 
 

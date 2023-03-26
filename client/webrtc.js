@@ -1313,7 +1313,7 @@ var peerConnectionConfig = {
           "urls": "stun:stun.cureseven.net:5349"
         },
         {
-            "urls": " turn:turn.cureseven.net:5349",
+            "urls": "turn:turn.cureseven.net:5349",
           "username": "testun",
           "credential": "testpw"
         }

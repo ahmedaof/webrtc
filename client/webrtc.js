@@ -1310,25 +1310,17 @@ function Update_user_status(id_name, value)
 var peerConnectionConfig = {
     "ice_servers": [
         {
-          "urls": "stun:global.stun.twilio.com:3478"
+          "urls": "stun:stun.cureseven.net:5349"
         },
         {
-          "username": "dc2d2894d5a9023620c467b0e71cfa6a35457e6679785ed6ae9856fe5bdfa269",
-          "credential": "tE2DajzSJwnsSbc123",
-          "urls": "turn:global.turn.twilio.com:3478?transport=udp"
-        },
-        {
-          "username": "dc2d2894d5a9023620c467b0e71cfa6a35457e6679785ed6ae9856fe5bdfa269",
-          "credential": "tE2DajzSJwnsSbc123",
-          "urls": "turn:global.turn.twilio.com:3478?transport=tcp"
-        },
-        {
-          "username": "dc2d2894d5a9023620c467b0e71cfa6a35457e6679785ed6ae9856fe5bdfa269",
-          "credential": "tE2DajzSJwnsSbc123",
-          "urls": "turn:global.turn.twilio.com:443?transport=tcp"
+            "urls": " turn:turn.cureseven.net:5349",
+          "username": "testun",
+          "credential": "testpw"
         }
+   
       ],
   }
+
 
 
 

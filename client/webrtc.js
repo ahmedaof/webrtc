@@ -1310,10 +1310,10 @@ function Update_user_status(id_name, value)
 var peerConnectionConfig = {
     "ice_servers": [
         {
-          "urls": "stun:stun.cureseven.net:5349"
+          "urls": "stun:stun.l.google.com:19302"
         },
         {
-            "urls": "turn:turn.cureseven.net:5349",
+          "urls": "turn:turn.cureseven.net:5349",
           "username": "testun",
           "credential": "testpw"
         }

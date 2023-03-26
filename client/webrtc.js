@@ -1319,8 +1319,7 @@ function Update_user_status(id_name, value)
 // {'urls': 'stun:stun.stunprotocol.org:3478'},
 // {'urls': 'stun:stun.l.google.com:19302'},
   var peerConnectionConfig = {
-    'sdpSemantics': 'unified-plan',
-  'iceServers': [
+    'iceServers': [
       {'urls': 'stun:stun.cureseven.net:5349'},
         {
           "urls": "turn:turn.cureseven.net:5349",

@@ -1308,7 +1308,7 @@ function Update_user_status(id_name, value)
 // // ]
 // };
 var peerConnectionConfig = {
-    "ice_servers": [
+    ice_servers: [
         {
           "urls": "stun:stun.l.google.com:19302"
         },

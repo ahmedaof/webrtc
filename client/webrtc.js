@@ -404,7 +404,7 @@ function onCandidate(candidate) {
     }
 
         yourConn.addEventListener('iceconnectionstatechange', (event) => {
-            if (pc.iceConnectionState === 'failed') {
+            if (yourConn.iceConnectionState === 'failed') {
               console.error('WebRTC: ICE failed, see about:webrtc for more details');
               // Handle the ICE failed error here
             }
@@ -1292,7 +1292,7 @@ var callBtn = document.querySelector('#callBtn');
         } 
     }
     yourConn.addEventListener('iceconnectionstatechange', (event) => {
-        if (pc.iceConnectionState === 'failed') {
+        if (yourConn.iceConnectionState === 'failed') {
           console.error('WebRTC: ICE failed, see about:webrtc for more details');
           // Handle the ICE failed error here
         }
@@ -1397,7 +1397,7 @@ function handleAnswer(answer) {
   // open video stream between two users webrtc server
   yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
   yourConn.addEventListener('iceconnectionstatechange', (event) => {
-    if (pc.iceConnectionState === 'failed') {
+    if (yourConn.iceConnectionState === 'failed') {
       console.error('WebRTC: ICE failed, see about:webrtc for more details');
       // Handle the ICE failed error here
     }

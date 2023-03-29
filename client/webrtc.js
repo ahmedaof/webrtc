@@ -409,6 +409,9 @@ function onCandidate(candidate) {
               // Handle the ICE failed error here
             }
           });
+          yourConn.addEventListener('icecandidateerror', (event) => {
+            console.error('WebRTC: ICE candidate error:', event.errorText);
+          });
 }
 /**
  * This function will send the user message to server.
@@ -936,6 +939,9 @@ function user_is_ready(val, peername) {
           // Handle the ICE failed error here
         }
       });
+      yourConn.addEventListener('icecandidateerror', (event) => {
+        console.error('WebRTC: ICE candidate error:', event.errorText);
+      });
 
   let name = localStorage.getItem("name")
     send({
@@ -1297,6 +1303,9 @@ var callBtn = document.querySelector('#callBtn');
           // Handle the ICE failed error here
         }
       });
+      yourConn.addEventListener('icecandidateerror', (event) => {
+        console.error('WebRTC: ICE candidate error:', event.errorText);
+      });
     yourConn.ontrack =  gotRemoteStream;
     yourConn.addStream(localStream);
 }
@@ -1401,6 +1410,9 @@ function handleAnswer(answer) {
       console.error('WebRTC: ICE failed, see about:webrtc for more details');
       // Handle the ICE failed error here
     }
+  });
+  yourConn.addEventListener('icecandidateerror', (event) => {
+    console.error('WebRTC: ICE candidate error:', event.errorText);
   });
 };
 

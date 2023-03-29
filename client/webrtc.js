@@ -32,11 +32,9 @@ var id_wordflick;
 
 
 function ping() {
-    console.log("ping sending");
     connection.send("clientping");
     tm = setTimeout(function () {
-        console.log("timeout....");
-        console.log("Server is down..")
+      
         /* Sever down */
         populate_error("server");
         document.getElementById('loginerror').innerText = "Server is down.. please try again later";
@@ -47,7 +45,6 @@ function ping() {
  * This function will clear timeout for ping
  */
 function pong() {
-    console.log("clear timeout");
     clearTimeout(tm);
 }
 /*********************************************************************
@@ -71,24 +68,14 @@ connection.onopen = function () {
     console.log("connection is fine");
     setInterval(ping, 10000);
     document.getElementById('messages').innerHTML = '';
-  console.log("Connected to the signaling server"); 
 };
 
-// connection.onopen = function () {
-//     console.log("connection is fine");
-//     setInterval(ping, 10000);
-//     document.getElementById('messages').innerHTML = '';
-// };
-/**
- * This function will handle all the messages from server.
- * Main functiion to receive data from server.
- */
+
 
 
 window.addEventListener('beforeunload', left_from_server)
 connection.onmessage = function (message) {
 
-    console.log("message from server = ", message.data);
     var data = JSON.parse(message.data);
 
     switch (data.type) {
@@ -148,11 +135,9 @@ connection.onmessage = function (message) {
           break; 
            //when somebody wants to call us 
           case "offer": 
-            console.log('inside offer')
             handleOffer(data.offer, data.name); 
           break; 
           case "answer": 
-            console.log('inside answer')
             handleAnswer(data.answer); 
           break; 
            //when a remote peer sends an ice candidate to us 
@@ -309,7 +294,6 @@ function icecandidateAdded(ev) {
  */
  var onSend_ChannelOpenState = function (event) {
     flag_send_datachannel = true;
-    console.log("dataChannel.OnOpen", event);
     if (Send_dataChannel.readyState == "open") {
         /* */
     }
@@ -347,7 +331,6 @@ function Create_DataChannel(name) {
 
     var channelname = "webrtc_label_" + name;
     Send_dataChannel = peerConnection.createDataChannel(channelname, dataChannelOptions);
-    console.log("Created DataChannel dataChannel = "+Send_dataChannel);
 
     Send_dataChannel.onerror = onSend_ChannelErrorState;
     Send_dataChannel.onmessage = onSend_ChannelMessageCallback;
@@ -363,8 +346,7 @@ function Create_DataChannel(name) {
         const offer =  peerConnection.createOffer({iceRestart:true});
          peerConnection.setLocalDescription(offer);
 
-        console.log("creating offer ---");
-        console.log("offer = "+ peerConnection.localDescription);
+      
         send({
             type: "offer",
             offer: offer
@@ -411,7 +393,6 @@ function creating_answer() {
  * This function will handle when another user answers to our offer .
  */
  function onAnswer(answer) {
-     console.log("when another user answers to  offer => answer = "+ answer);
     //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
      yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
     //  alert('ff')
@@ -548,7 +529,6 @@ function create_request_room_Modal(name) {
     //document.getElementById('peer_user_name_incoming').innerHTML = "<li class='loading' data-loading-text='"+ name +"is requesting for a chat ..'></li>";
     var string = name +" is requesting for a chat ..";
     var words = [string];
-    console.log("*********calling wordflick ***********");
     id_wordflick = wordflick(words);
 
     $("#incoming_call_Modal").modal('show');
@@ -842,43 +822,7 @@ function request_voice_call(name) {
     call_user(name , 'voice')
 }
 
-
-// callBtn.addEventListener("click", function () {
-//     console.log('inside call button')
-  
-//     var callToUsername = document.getElementById('callToUsernameInput').value;
-      
-//     if (callToUsername.length > 0) { 
-//       connectedUser = callToUsername; 
-//       console.log('nameToCall',connectedUser);
-//       console.log('create an offer to-',connectedUser)
-  
-      
-//       var connectionState2 = yourConn.connectionState;
-//       console.log('connection state before call beginning',connectionState2)
-//       var signallingState2 = yourConn.signalingState;
-//     //console.log('connection state after',connectionState1)
-//     console.log('signalling state after',signallingState2)
-//       yourConn.createOffer(function (offer) { 
-//          send({
-//             type: "offer", 
-//             offer: offer 
-//          }); 
-      
-//          yourConn.setLocalDescription(offer); 
-//       }, function (error) { 
-//          alert("Error when creating an offer",error); 
-//          console.log("Error when creating an offer",error)
-//       }); 
-//       document.getElementById('callOngoing').style.display = 'block';
-//       document.getElementById('callInitiator').style.display = 'none';
-  
-//     } 
-//     else 
-//       alert("username can't be blank!")
-//   });
 function call_user(name,type) {
-    console.log('inside call button')
 
   
     if(type == 'video')
@@ -907,14 +851,11 @@ function call_user(name,type) {
 	
   if (callToUsername.length > 0) { 
     connectedUser = callToUsername; 
-    console.log('nameToCall',connectedUser);
-    console.log('create an offer to-',connectedUser)
+
     // yourConn = new RTCPeerConnection(peerConnectionConfig);
     var connectionState2 = yourConn.connectionState;
-    console.log('connection state before call beginning',connectionState2)
     var signallingState2 = yourConn.signalingState;
-  //console.log('connection state after',connectionState1)
-  console.log('signalling state after',signallingState2)
+
 
  
 
@@ -929,7 +870,6 @@ function call_user(name,type) {
        yourConn.setLocalDescription(offer); 
     }, function (error) { 
        alert("Error when creating an offer",error); 
-       console.log("Error when creating an offer",error)
     }); 
     document.getElementById('callOngoing').style.display = 'block';
     document.getElementById('callInitiator').style.display = 'none';
@@ -976,7 +916,6 @@ function onOffer(offer, name , offerType) {
     }
 
 
-    console.log("somebody wants to call us  => offer = "+ offer);
     connectedUser = name;
     conn_offer = offer;
     /*create a popup to accept/reject room request*/
@@ -987,6 +926,10 @@ function onOffer(offer, name , offerType) {
  * room is created sucessfully.
  */
 function user_is_ready(val, peername) {
+    yourConn.addEventListener('iceerror', (event) => {
+        console.error('ICE Error:', event.errorText);
+        // Handle the error here
+      });
   let name = localStorage.getItem("name")
     send({
         type: "call_started",
@@ -1170,7 +1113,6 @@ fetch(`https://${window.location.hostname}:3000/user`, requestOptions)
 .then(async(result) =>
 {
     let users = await JSON.parse(result).users;
-    console.log(users);
     for(let i=0;i<users.length;i++){
 
         document.getElementById('lstChat').innerHTML += "<li class='list-group-item list-group-item-action'>" +
@@ -1200,8 +1142,7 @@ fetch(`https://${window.location.hostname}:3000/user`, requestOptions)
 
                 // if (username != key) { 
                     var id_name = 'online_status_'+key; /* Used for dynamic id */
-                        console.log("ddddddddddd",key)
-                        console.log("ssssssssss",value)
+                     
                     Update_user_status(slugify(id_name), value);    
                     id++;   
                 // }
@@ -1230,47 +1171,11 @@ function LoadOnlineUserList(username_array) {
                                                         'online users (' + (map2.size - 1) + ')';
     document.getElementById('lstChat').innerHTML = '';
 
-    // if (map2.size > 1) {
-        
-    //     var id = 0;
-
-    //     for (let [key, value] of map2) {
-    //         if (username != key) { 
-    //             var id_name = 'online_status_'+id; /* Used for dynamic id */
-    //             /*populate the sidebar online users list dynamically*/
-    //             document.getElementById('lstChat').innerHTML += "<li class='list-group-item list-group-item-action'>" +
-    //                 "<div class='row'>" +
-    //                 "<div class='col-md-2'>" +
-    //                 `<img src="https://www.shutterstock.com/image-vector/avatar-man-icon-symbol-simple-260nw-1701935266.jpg" class='friend-pic rounded-circle' />`+
-    //                 "</div>" +
-    //                 // "<button id = 'callBtn' class = 'btn-success btn'>" 
-    //                 "<div class='col-md-7' style='cursor:pointer;' onclick='request_call(\"" + key + "\")'>" +
-    //                 "<div class='name'>" + key + "</div>" +
-    //                 "<div class='under-name'><span id="+id_name+" class='indicator label-success'></span>" + value + "</div>" +
-    //                 "</div>" +
-    //                 "<div class='col-md-3 mt-3 video-icon' onclick='video_user(\"" + key + "\")'>" + '<i class="fas fa-video"></i>' + "</div>" +
-    //                 "</div>" +
-    //                 "</li>";
-                    
-    //             Update_user_status(id_name, value);    
-    //             id++;   
-    //         }
-    //     }
-    // }
-    // else
-    // {
-    //         /* Only one user name present ie. only client */
-    //         if (map2.key == username) {
-    //             document.getElementById('lstChat').innerHTML = "";
-    //             console.log("single user = ", map2.key);
-    //         }
-    // }
-    // console.log(map2)
+ 
     add_user_to_list(username_array);
 }
 function Update_user_status(id_name, value)
 {
-    console.log("update user status",id_name)
     switch(value)
     {
         /* handle the user status */
@@ -1394,7 +1299,6 @@ var callBtn = document.querySelector('#callBtn');
 
 /* START: Recieved call from server i.e. recieve messages from server  */
 function gotMessageFromServer(message) {
-  console.log("Got message", message.data); 
   var data = JSON.parse(message.data); 
  
   switch(data.type) { 
@@ -1403,11 +1307,9 @@ function gotMessageFromServer(message) {
     break; 
      //when somebody wants to call us 
     case "offer": 
-      console.log('inside offer')
       handleOffer(data.offer, data.name); 
     break; 
     case "answer": 
-      console.log('inside answer')
       handleAnswer(data.answer); 
     break; 
      //when a remote peer sends an ice candidate to us 
@@ -1422,18 +1324,16 @@ function gotMessageFromServer(message) {
       break; 
   } 
 
-//   connection.onerror = function (err) { 
-//     console.log("Got error", err); 
-//   };
+
 
 }
+
 
 function send(msg) { 
   //attach the other peer username to our messages 
   if (connectedUser) { 
     msg.name = connectedUser; 
   } 
-  console.log('msg before sending to server',msg)
   connection.send(JSON.stringify(msg)); 
 };
 
@@ -1512,15 +1412,13 @@ function handleLeave() {
   remoteVideo.src = null; 
   var connectionState = yourConn.connectionState;
   var signallingState = yourConn.signalingState;
-  console.log('connection state before',connectionState)
-  console.log('signalling state before',signallingState)
+
   yourConn.close(); 
   yourConn.onicecandidate = null; 
   yourConn.onaddstream = null; 
   var connectionState1 = yourConn.connectionState;
   var signallingState1 = yourConn.signalingState;
-  console.log('connection state after',connectionState1)
-  console.log('signalling state after',signallingState1)
+
 };
 
 
@@ -1540,7 +1438,6 @@ var requestOptions = {
 fetch(`https://${window.location.hostname}:3000/auth/signout`, requestOptions)
   .then(response => response.text())
   .then(result => {
-    console.log('result', result)
     localStorage.removeItem('token');
     window.location.reload();
     })

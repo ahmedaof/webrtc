@@ -99,7 +99,6 @@ connection.onmessage = function (message) {
             break;
 
         case "server_candidate":
-            console.log("server_candidate", data.candidate);
             onCandidate(data.candidate);
             break;
 
@@ -404,9 +403,11 @@ function onCandidate(candidate) {
         console.log("error in adding ice candidate", error)
     }
 
-        yourConn.addEventListener('iceerror', (event) => {
-            console.error('ICE Error:', event.errorText);
-            // Handle the error here
+        yourConn.addEventListener('iceconnectionstatechange', (event) => {
+            if (pc.iceConnectionState === 'failed') {
+              console.error('WebRTC: ICE failed, see about:webrtc for more details');
+              // Handle the ICE failed error here
+            }
           });
 }
 /**
@@ -929,9 +930,11 @@ function onOffer(offer, name , offerType) {
  */
 function user_is_ready(val, peername) {
 
-    yourConn.addEventListener('iceerror', (event) => {
-        console.error('ICE Error:', event.errorText);
-        // Handle the error here
+    yourConn.addEventListener('iceconnectionstatechange', (event) => {
+        if (yourConn.iceConnectionState === 'failed') {
+          console.error('WebRTC: ICE failed, see about:webrtc for more details');
+          // Handle the ICE failed error here
+        }
       });
 
   let name = localStorage.getItem("name")
@@ -1288,9 +1291,11 @@ var callBtn = document.querySelector('#callBtn');
             }); 
         } 
     }
-    yourConn.addEventListener('iceerror', (event) => {
-        console.error('ICE Error:', event.errorText);
-        // Handle the error here
+    yourConn.addEventListener('iceconnectionstatechange', (event) => {
+        if (pc.iceConnectionState === 'failed') {
+          console.error('WebRTC: ICE failed, see about:webrtc for more details');
+          // Handle the ICE failed error here
+        }
       });
     yourConn.ontrack =  gotRemoteStream;
     yourConn.addStream(localStream);
@@ -1391,9 +1396,11 @@ function errorHandler(error) {
 function handleAnswer(answer) { 
   // open video stream between two users webrtc server
   yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
-  yourConn.addEventListener('iceerror', (event) => {
-    console.error('ICE Error:', event.errorText);
-    // Handle the error here
+  yourConn.addEventListener('iceconnectionstatechange', (event) => {
+    if (pc.iceConnectionState === 'failed') {
+      console.error('WebRTC: ICE failed, see about:webrtc for more details');
+      // Handle the ICE failed error here
+    }
   });
 };
 

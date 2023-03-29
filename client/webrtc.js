@@ -396,7 +396,12 @@ function creating_answer() {
  */
 function onCandidate(candidate) {
       
+    try {
+        
         yourConn.addIceCandidate(new RTCIceCandidate(candidate));
+    } catch (error) {
+        console.log("error in adding ice candidate", error)
+    }
 
         yourConn.addEventListener('iceerror', (event) => {
             console.error('ICE Error:', event.errorText);
@@ -923,6 +928,11 @@ function onOffer(offer, name , offerType) {
  */
 function user_is_ready(val, peername) {
 
+    yourConn.addEventListener('iceerror', (event) => {
+        console.error('ICE Error:', event.errorText);
+        // Handle the error here
+      });
+
   let name = localStorage.getItem("name")
     send({
         type: "call_started",
@@ -1276,7 +1286,7 @@ var callBtn = document.querySelector('#callBtn');
               candidate: event.candidate 
             }); 
         } 
-    }; 
+    }
     yourConn.addEventListener('iceerror', (event) => {
         console.error('ICE Error:', event.errorText);
         // Handle the error here

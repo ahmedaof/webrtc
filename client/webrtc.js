@@ -142,7 +142,6 @@ connection.onmessage = function (message) {
           break; 
            //when a remote peer sends an ice candidate to us 
           case "candidate": 
-            console.log('inside handle candidate')
             handleCandidate(data.candidate); 
           break; 
           case "leave": 
@@ -280,15 +279,7 @@ var handlestatechangeCallback = function (event) {
 /**
  * This function will handle ICE candidate event. 
  */
-function icecandidateAdded(ev) {
-    console.log("ICE candidate = "+ ev.candidate);
-    if (ev.candidate) {
-        send({
-            type: "candidate",
-            candidate: ev.candidate
-        });
-    }
-};
+
 /**
  * This function will handle the data channel open callback.
  */
@@ -404,8 +395,13 @@ function creating_answer() {
  * This function will handle when when we got ice candidate from another user.
  */
 function onCandidate(candidate) {
-        console.log("onCandidate => candidate = "+ candidate);
+      
         yourConn.addIceCandidate(new RTCIceCandidate(candidate));
+
+        yourConn.addEventListener('iceerror', (event) => {
+            console.error('ICE Error:', event.errorText);
+            // Handle the error here
+          });
 }
 /**
  * This function will send the user message to server.
@@ -926,10 +922,7 @@ function onOffer(offer, name , offerType) {
  * room is created sucessfully.
  */
 function user_is_ready(val, peername) {
-    yourConn.addEventListener('iceerror', (event) => {
-        console.error('ICE Error:', event.errorText);
-        // Handle the error here
-      });
+
   let name = localStorage.getItem("name")
     send({
         type: "call_started",
@@ -1276,9 +1269,7 @@ var callBtn = document.querySelector('#callBtn');
   yourConn = new RTCPeerConnection(peerConnectionConfig);
 
   connectionState = yourConn.connectionState;
-  console.log('connection state inside getusermedia',connectionState)
   yourConn.onicecandidate = function (event) {     
-      console.log('onicecandidate inside getusermedia success', event.candidate)
       if (event.candidate) { 
           send({ 
               type: "candidate", 
@@ -1286,6 +1277,10 @@ var callBtn = document.querySelector('#callBtn');
             }); 
         } 
     }; 
+    yourConn.addEventListener('iceerror', (event) => {
+        console.error('ICE Error:', event.errorText);
+        // Handle the error here
+      });
     yourConn.ontrack =  gotRemoteStream;
     yourConn.addStream(localStream);
 }
@@ -1314,7 +1309,6 @@ function gotMessageFromServer(message) {
     break; 
      //when a remote peer sends an ice candidate to us 
     case "candidate": 
-      console.log('inside handle candidate')
       handleCandidate(data.candidate); 
     break; 
     case "leave": 
@@ -1375,19 +1369,21 @@ declineBtn.addEventListener("click", function () {
 };
 
  function gotRemoteStream(event) {
-  console.log('got remote stream');
   remoteVideo.srcObject = event.streams[0];
 }
 
 function errorHandler(error) {
-  console.log(error);
+  console.log("error",error);
 }
 
 //when we got an answer from a remote user 
 function handleAnswer(answer) { 
-  console.log('answer: ', answer)
   // open video stream between two users webrtc server
   yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
+  yourConn.addEventListener('iceerror', (event) => {
+    console.error('ICE Error:', event.errorText);
+    // Handle the error here
+  });
 };
 
 //when we got an ice candidate from a remote user 

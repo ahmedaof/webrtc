@@ -405,7 +405,7 @@ function onCandidate(candidate) {
 
         yourConn.addEventListener('iceconnectionstatechange', (event) => {
             if (yourConn.iceConnectionState === 'failed') {
-              console.error('WebRTC: ICE failed, see about:webrtc for more details');
+              console.error('WebRTC: ICE failed, see about:webrtc for more details:', event.errorText);
               // Handle the ICE failed error here
             }
           });
@@ -935,7 +935,7 @@ function user_is_ready(val, peername) {
 
     yourConn.addEventListener('iceconnectionstatechange', (event) => {
         if (yourConn.iceConnectionState === 'failed') {
-          console.error('WebRTC: ICE failed, see about:webrtc for more details');
+          console.error('WebRTC: ICE failed, see about:webrtc for more details:', event.errorText);
           // Handle the ICE failed error here
         }
       });
@@ -1299,7 +1299,7 @@ var callBtn = document.querySelector('#callBtn');
     }
     yourConn.addEventListener('iceconnectionstatechange', (event) => {
         if (yourConn.iceConnectionState === 'failed') {
-          console.error('WebRTC: ICE failed, see about:webrtc for more details');
+          console.error('WebRTC: ICE failed, see about:webrtc for more details:', event.errorText);
           // Handle the ICE failed error here
         }
       });
@@ -1407,7 +1407,7 @@ function handleAnswer(answer) {
   yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
   yourConn.addEventListener('iceconnectionstatechange', (event) => {
     if (yourConn.iceConnectionState === 'failed') {
-      console.error('WebRTC: ICE failed, see about:webrtc for more details');
+      console.error('WebRTC: ICE failed, see about:webrtc for more details:', event.errorText);
       // Handle the ICE failed error here
     }
   });

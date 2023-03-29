@@ -99,6 +99,7 @@ connection.onmessage = function (message) {
             break;
 
         case "server_candidate":
+            console.log("server_candidate", data.candidate);
             onCandidate(data.candidate);
             break;
 

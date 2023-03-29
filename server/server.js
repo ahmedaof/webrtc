@@ -177,7 +177,7 @@ wss.on('connection', function (connection) {
 						if(conn.otherName != null)
 						{
 							sendTo(conn, { type: "server_candidate", candidate: data.candidate });
-							console.log("candidate sending --");
+							console.log("candidate sending --",data.candidate);
 						}
 						
 					}

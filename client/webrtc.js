@@ -842,14 +842,14 @@ function call_user(name,type) {
   if (callToUsername.length > 0) { 
     connectedUser = callToUsername; 
 
-    // yourConn = new RTCPeerConnection(peerConnectionConfig);
-    var connectionState2 = yourConn.connectionState;
-    var signallingState2 = yourConn.signalingState;
+   let  yourConn1 = new RTCPeerConnection(peerConnectionConfig);
+    var connectionState2 = yourConn1.connectionState;
+    var signallingState2 = yourConn1.signalingState;
 
 
     
     
-    yourConn.createOffer(function (offer) { 
+    yourConn1.createOffer(function (offer) { 
         offer.sdp = preferOpus(offer.sdp);
        send({
           type: "offer", 
@@ -858,7 +858,7 @@ function call_user(name,type) {
           current_name:localStorage.getItem('name')
        }); 
     
-       yourConn.setLocalDescription(offer); 
+       yourConn1.setLocalDescription(offer); 
     }, function (error) { 
        alert("Error when creating an offer",error); 
     }); 

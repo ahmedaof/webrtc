@@ -128,18 +128,9 @@ connection.onmessage = function (message) {
 
         case "server_nouser":
             break;
-
-        case "login": 
-            handleLogin(data.success,data.allUsers); 
-          break; 
-           //when somebody wants to call us 
-          case "answer": 
-            handleAnswer(data.answer); 
-          break; 
+            
            //when a remote peer sends an ice candidate to us 
-          case "candidate": 
-            handleCandidate(data.candidate); 
-          break; 
+       
           case "leave": 
             handleLeave(); 
           break; 
@@ -207,11 +198,7 @@ fetch(`https://${window.location.hostname}:3000/auth/signin`, requestOptions)
  
   })
   .catch(error => alert('Email or password is incorrect'));
-    //  document.getElementById('divChatName_username').innerHTML = username;
-    //  send({
-    //      type: "login",
-    //      name: username
-    //  });
+
  });
 /*********************************************************************
  *  WebRTC related Functions (Creation of RTC peer connection, Offer, ICE, SDP, Answer etc..)
@@ -348,8 +335,7 @@ function make_answer() {
    yourConn2.ontrack =  gotRemoteStream;
    yourConn2.addStream(localStream);
     yourConn2.ondatachannel = receiveChannelCallback;
-    yourConn2.setRemoteDescription(new RTCSessionDescription(conn_offer),setRemoteDescriptionSuccess,
-    setRemoteDescriptionError);
+    yourConn2.setRemoteDescription(new RTCSessionDescription(conn_offer));
     yourConn2.createAnswer()
     .then(function(answer) {
        
@@ -367,12 +353,7 @@ function make_answer() {
   });
 }
 
-function setRemoteDescriptionSuccess() { }
 
-
-function setRemoteDescriptionError(error) {
-    console.log('setRemoteDescription error: ', error);
-}
 /**
  * This function will create the webRTC answer for offer.
  */
@@ -381,10 +362,7 @@ function setRemoteDescriptionError(error) {
  * This function will handle when another user answers to our offer .
  */
  function onAnswer(answer) {
-    //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
-     yourConn1.setRemoteDescription(new RTCSessionDescription(answer), setRemoteDescriptionSuccess,
-     setRemoteDescriptionError); 
-    //  alert('ff')
+     yourConn1.setRemoteDescription(new RTCSessionDescription(answer)); 
     send({
         type: "ready"
     });
@@ -400,16 +378,6 @@ function onCandidate(candidate) {
     } catch (error) {
         console.log("error in adding ice candidate", error)
     }
-
-        yourConn1.addEventListener('iceconnectionstatechange', (event) => {
-            if (yourConn1.iceConnectionState === 'failed') {
-              console.error('WebRTC: ICE failed, see about:webrtc for more details:', event);
-              // Handle the ICE failed error here
-            }
-          });
-          yourConn1.addEventListener('icecandidateerror', (event) => {
-            console.error('WebRTC: ICE candidate error:', event.errorText);
-          });
 }
 /**
  * This function will send the user message to server.
@@ -829,26 +797,26 @@ function request_voice_call(name) {
 function call_user(name,type) {
 
   
-    if(type == 'video')
-    {
+    // if(type == 'video')
+    // {
        
 
-    }
-    else{
+    // }
+    // else{
 
-        let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
+    //     let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
 
-        if(videoTrack.enabled){
-            videoTrack.enabled = false
-            localVideo.src = null;
-            localVideo.style.display = 'none';
-            remoteVideo.style.display = 'none';
-        }else{
-            videoTrack.enabled = true
-        }
+    //     if(videoTrack.enabled){
+    //         videoTrack.enabled = false
+    //         localVideo.src = null;
+    //         localVideo.style.display = 'none';
+    //         remoteVideo.style.display = 'none';
+    //     }else{
+    //         videoTrack.enabled = true
+    //     }
 
 
-    }
+    // }
 
     var callToUsername = name;
   
@@ -857,19 +825,8 @@ function call_user(name,type) {
     connectedUser = callToUsername; 
 
      yourConn1 = new RTCPeerConnection(peerConnectionConfig);
-    var connectionState2 = yourConn1.connectionState;
-    var signallingState2 = yourConn1.signalingState;
-
 
     connectionState = yourConn1.connectionState;
-//   yourConn1.onicecandidate = function (event) {     
-//       if (event.candidate) { 
-//           send({ 
-//               type: "candidate", 
-//               candidate: event.candidate 
-//             }); 
-//         } 
-//     }
     yourConn1.ontrack =  gotRemoteStream;
     yourConn1.addStream(localStream);
     
@@ -894,26 +851,8 @@ function call_user(name,type) {
   else 
     alert("username can't be blank!")
 
-    // if (chat_window_flag == true) {
-    //     //already in a room
-    //     populate_error("inaroom");
-    // }
-    // else {
-    //     var otherUsername = name;
-    //     connectedUser = otherUsername;
-
-    //     if (otherUsername.length > 0) {
-            
-    //         send({
-    //             type: "want_to_call",
-    //             name: otherUsername
-    //         });
-    //     }
-    // }
 }
-/**
- * This function will handle when somebody wants to call us 
- */
+
 function onOffer(offer, name , offerType) {
 
     if(offerType == 'voice')
@@ -1203,39 +1142,7 @@ function Update_user_status(id_name, value)
             break;
     }
 }
-/*******************************************************************
- * End of file
- ********************************************************************/
 
-// var peerConnectionConfig = {
-//     'sdpSemantics': 'unified-plan',
-//   'iceServers': [
-//     {
-//         "urls": "stun:stun.voiptecworlds.online:5349"
-//     },
-//     {
-//         urls: 'turn:turn.voiptecworlds.online:5349',
-//         credential: 'ahmed',
-//         username: 'ahmed'
-//     }
-//   ]
-// //   "iceServers": [
-// //     {
-// //         "urls": "stun:stun.sipglobalphone.com:3478"
-// //     }
-// // ]
-// };
-// var peerConnectionConfig = {
-//     ice_servers: [
-//         {
-//           "urls": "stun:stun.l.google.com:19302"
-//         }
-   
-//       ],
-//   }
-
-// {'urls': 'stun:stun.stunprotocol.org:3478'},
-// {'urls': 'stun:stun.l.google.com:19302'},
   var peerConnectionConfig = {
     'iceServers': [
       {'urls': 'stun:stun.cureseven.net:5349'},
@@ -1247,62 +1154,17 @@ function Update_user_status(id_name, value)
   ]
 };
 
-
-
-
-
-// connection.onmessage = gotMessageFromServer;
-
-// document.getElementById('otherElements').hidden = true;
-// var usernameInput = document.querySelector('#usernameInput'); 
-// var usernameShow = document.querySelector('#showLocalUserName'); 
-// var showAllUsers = document.querySelector('#allUsers');
-// var remoteUsernameShow = document.querySelector('#showRemoteUserName');
-// var callToUsernameInput = document.querySelector('#callToUsernameInput');
 var callBtn = document.querySelector('#callBtn'); 
-// var hangUpBtn = document.querySelector('#hangUpBtn');
-
-
-// var loginBtn = document.querySelector('#loginBtn');
-// // Login when the user clicks the button 
-// loginBtn.addEventListener("click", function (event) { 
-//   name = usernameInput.value; 
-//   // usernameShow.innerHTML = "Hello, "+name;
-//   if (name.length > 0) { 
-//      send({ 
-//         type: "login", 
-//         name: name 
-//      }); 
-//   } 
- 
-// });
-
-
-/* START: Register user for first time i.e. Prepare ground for webrtc call to happen */
-
-/* END: Register user for first time i.e. Prepare ground for webrtc call to happen */
 
 
  function getUserMediaSuccess(stream) {
   localStream = stream;
   localVideo.srcObject = stream;
-
-  
-  
 }
 
 
 
-/* START: Initiate call to any user i.e. send message to server */
-
-/* END: Initiate call to any user i.e. send message to server */
-
-
-
-
-
 function send(msg) { 
-  //attach the other peer username to our messages 
   if (connectedUser) { 
     msg.name = connectedUser; 
   } 
@@ -1317,13 +1179,6 @@ function send(msg) {
 function errorHandler(error) {
   console.log("error",error);
 }
-
-
-
-//when we got an ice candidate from a remote user 
-function handleCandidate(candidate) { 
-  yourConn.addIceCandidate(new RTCIceCandidate(candidate)); 
-};
 
 //hang up
 hangUpBtn.addEventListener("click", function () { 
@@ -1340,15 +1195,6 @@ hangUpBtn.addEventListener("click", function () {
 function handleLeave() { 
   connectedUser = null; 
   remoteVideo.src = null; 
-  var connectionState = yourConn.connectionState;
-  var signallingState = yourConn.signalingState;
-
-  yourConn.close(); 
-  yourConn.onicecandidate = null; 
-  yourConn.onaddstream = null; 
-  var connectionState1 = yourConn.connectionState;
-  var signallingState1 = yourConn.signalingState;
-
 };
 
 

@@ -123,9 +123,6 @@ connection.onmessage = function (message) {
         case "server_exitfrom":
             left_from_server();
             break;
-        
-     
-
         case "server_error":
             break;
 
@@ -136,9 +133,6 @@ connection.onmessage = function (message) {
             handleLogin(data.success,data.allUsers); 
           break; 
            //when somebody wants to call us 
-          case "offer": 
-            handleOffer(data.offer, data.name); 
-          break; 
           case "answer": 
             handleAnswer(data.answer); 
           break; 
@@ -354,7 +348,8 @@ function make_answer() {
    yourConn2.ontrack =  gotRemoteStream;
    yourConn2.addStream(localStream);
     yourConn2.ondatachannel = receiveChannelCallback;
-    yourConn2.setRemoteDescription(new RTCSessionDescription(conn_offer));
+    yourConn2.setRemoteDescription(new RTCSessionDescription(conn_offer),setRemoteDescriptionSuccess,
+    setRemoteDescriptionError);
     yourConn2.createAnswer()
     .then(function(answer) {
        
@@ -883,7 +878,7 @@ function call_user(name,type) {
         offer.sdp = preferOpus(offer.sdp);
        send({
           type: "offer", 
-          offer: offer ,
+          offer: offer,
           offerType:type,
           current_name:localStorage.getItem('name')
        }); 
@@ -1303,35 +1298,7 @@ var callBtn = document.querySelector('#callBtn');
 /* END: Initiate call to any user i.e. send message to server */
 
 
-/* START: Recieved call from server i.e. recieve messages from server  */
-function gotMessageFromServer(message) {
-  var data = JSON.parse(message.data); 
- 
-  switch(data.type) { 
-    case "login": 
-      handleLogin(data.success,data.allUsers); 
-    break; 
-     //when somebody wants to call us 
-    case "offer": 
-      handleOffer(data.offer, data.name); 
-    break; 
-    case "answer": 
-      handleAnswer(data.answer); 
-    break; 
-     //when a remote peer sends an ice candidate to us 
-    case "candidate": 
-      handleCandidate(data.candidate); 
-    break; 
-    case "leave": 
-      handleLeave(); 
-    break; 
-    default: 
-      break; 
-  } 
 
-
-
-}
 
 
 function send(msg) { 
@@ -1342,42 +1309,6 @@ function send(msg) {
   connection.send(JSON.stringify(msg)); 
 };
 
-/* START: Create an answer for an offer i.e. send message to server */
-function handleOffer(offer, name) { 
-//   document.getElementById('callInitiator').style.display = 'none';
-  document.getElementById('callReceiver').style.display = 'block';
-
-  /* Call answer functionality starts */
-  answerBtn.addEventListener("click", function () { 
-
-  connectedUser = name; 
-  yourConn.setRemoteDescription(new RTCSessionDescription(offer)); 
- 
-  //create an answer to an offer 
-  yourConn.createAnswer(function (answer) { 
- 
-   
-    send({ 
-      type: "answer", 
-        answer: answer 
-    });
-    yourConn.setLocalDescription(answer); 
-  }, function (error) { 
-     alert("Error when creating an answer"); 
-  }); 
-  document.getElementById('callReceiver').style.display = 'none';
-  document.getElementById('callOngoing').style.display = 'block';
-});
-/* Call answer functionality ends */
-/* Call decline functionality starts */
-declineBtn.addEventListener("click", function () {
-  document.getElementById('callInitiator').style.display = 'block';
-  document.getElementById('callReceiver').style.display = 'none';
-
-});
-
-/*Call decline functionality ends */
-};
 
  function gotRemoteStream(event) {
   remoteVideo.srcObject = event.streams[0];

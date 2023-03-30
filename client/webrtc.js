@@ -794,6 +794,7 @@ function request_voice_call(name) {
     call_user(name , 'voice')
 }
 
+
 function call_user(name,type) {
 
   
@@ -852,6 +853,36 @@ function call_user(name,type) {
     alert("username can't be blank!")
 
 }
+
+function requestTurn(turn_url) {
+    var turnExists = false;
+    for (var i in _pcConfig.iceServers) {
+        if (_pcConfig.iceServers[i].url.substr(0, 5) === 'turn:') {
+            turnExists = true;
+            _turnReady = true;
+            break;
+        }
+    }
+
+    if (!turnExists) {
+        console.log('Getting TURN server from ', turn_url);
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var turnServer = JSON.parse(xhr.responseText);
+                console.log('Got TURN server: ', turnServer);
+                _pcConfig.iceServers.push({
+                    'url': 'turn:' + turnServer.username + '@' + turnServer.turn,
+                    'credential': turnServer.password
+                });
+                _turnReady = true;
+            }
+        }
+        xhr.open('GET', turn_url, true);
+        xhr.send();
+    }
+}
+
 
 function onOffer(offer, name , offerType) {
 

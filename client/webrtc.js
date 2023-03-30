@@ -371,6 +371,13 @@ function make_answer() {
         clear_incoming_modal_popup(); /*remove modal when any error occurs */
   });
 }
+
+function setRemoteDescriptionSuccess() { }
+
+
+function setRemoteDescriptionError(error) {
+    console.log('setRemoteDescription error: ', error);
+}
 /**
  * This function will create the webRTC answer for offer.
  */
@@ -380,7 +387,8 @@ function make_answer() {
  */
  function onAnswer(answer) {
     //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
-     yourConn1.setRemoteDescription(new RTCSessionDescription(answer)); 
+     yourConn1.setRemoteDescription(new RTCSessionDescription(answer), setRemoteDescriptionSuccess,
+     setRemoteDescriptionError); 
     //  alert('ff')
     send({
         type: "ready"

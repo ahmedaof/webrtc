@@ -3,6 +3,8 @@ var remoteVideo = document.getElementById('remoteVideo');
 var localStream;
 var myName;
 var yourConn;
+var yourConn1;
+var yourConn2;
 var uuid;
 var connection;
 var connectionState;
@@ -339,20 +341,25 @@ function make_answer() {
     //create RTC peer connection from receive end
     // create_webrtc_intial_connection();
     //create a data channel bind
-    yourConn.ondatachannel = receiveChannelCallback;
-    yourConn.setRemoteDescription(new RTCSessionDescription(conn_offer));
-    creating_answer();
-}
-/**
- * This function will create the webRTC answer for offer.
- */
-function creating_answer() {
-
-    yourConn.createAnswer()
+  yourConn2 = new RTCPeerConnection(peerConnectionConfig);
+ connectionState = yourConn2.connectionState;
+ yourConn2.onicecandidate = function (event) {     
+     if (event.candidate) { 
+         send({ 
+             type: "candidate", 
+             candidate: event.candidate 
+           }); 
+       } 
+   }
+   yourConn2.ontrack =  gotRemoteStream;
+   yourConn2.addStream(localStream);
+    yourConn2.ondatachannel = receiveChannelCallback;
+    yourConn2.setRemoteDescription(new RTCSessionDescription(conn_offer));
+    yourConn2.createAnswer()
     .then(function(answer) {
        
 
-        yourConn.setLocalDescription(answer);
+        yourConn2.setLocalDescription(answer);
         conn_answer = answer;
         send({
             type: "answer",
@@ -365,11 +372,15 @@ function creating_answer() {
   });
 }
 /**
+ * This function will create the webRTC answer for offer.
+ */
+
+/**
  * This function will handle when another user answers to our offer .
  */
  function onAnswer(answer) {
     //  document.getElementById('dynamic_progress_text').setAttribute('data-loading-text', "Waiting for a answer from user..Please wait ..");
-     yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
+     yourConn1.setRemoteDescription(new RTCSessionDescription(answer)); 
     //  alert('ff')
     send({
         type: "ready"
@@ -382,18 +393,18 @@ function onCandidate(candidate) {
       
     try {
         
-        yourConn.addIceCandidate(new RTCIceCandidate(candidate));
+        yourConn1.addIceCandidate(new RTCIceCandidate(candidate));
     } catch (error) {
         console.log("error in adding ice candidate", error)
     }
 
-        yourConn.addEventListener('iceconnectionstatechange', (event) => {
-            if (yourConn.iceConnectionState === 'failed') {
+        yourConn1.addEventListener('iceconnectionstatechange', (event) => {
+            if (yourConn1.iceConnectionState === 'failed') {
               console.error('WebRTC: ICE failed, see about:webrtc for more details:', event);
               // Handle the ICE failed error here
             }
           });
-          yourConn.addEventListener('icecandidateerror', (event) => {
+          yourConn1.addEventListener('icecandidateerror', (event) => {
             console.error('WebRTC: ICE candidate error:', event.errorText);
           });
 }
@@ -842,11 +853,22 @@ function call_user(name,type) {
   if (callToUsername.length > 0) { 
     connectedUser = callToUsername; 
 
-   let  yourConn1 = new RTCPeerConnection(peerConnectionConfig);
+     yourConn1 = new RTCPeerConnection(peerConnectionConfig);
     var connectionState2 = yourConn1.connectionState;
     var signallingState2 = yourConn1.signalingState;
 
 
+    connectionState = yourConn1.connectionState;
+//   yourConn1.onicecandidate = function (event) {     
+//       if (event.candidate) { 
+//           send({ 
+//               type: "candidate", 
+//               candidate: event.candidate 
+//             }); 
+//         } 
+//     }
+    yourConn1.ontrack =  gotRemoteStream;
+    yourConn1.addStream(localStream);
     
     
     yourConn1.createOffer(function (offer) { 
@@ -917,16 +939,6 @@ function onOffer(offer, name , offerType) {
  * room is created sucessfully.
  */
 function user_is_ready(val, peername) {
-
-    yourConn.addEventListener('iceconnectionstatechange', (event) => {
-        if (yourConn.iceConnectionState === 'failed') {
-          console.error('WebRTC: ICE failed, see about:webrtc for more details:', JSON.stringify(event));
-          // Handle the ICE failed error here
-        }
-      });
-      yourConn.addEventListener('icecandidateerror', (event) => {
-        console.error('WebRTC: ICE candidate error:', event.errorText);
-      });
 
   let name = localStorage.getItem("name")
     send({
@@ -1271,28 +1283,9 @@ var callBtn = document.querySelector('#callBtn');
  function getUserMediaSuccess(stream) {
   localStream = stream;
   localVideo.srcObject = stream;
-  yourConn = new RTCPeerConnection(peerConnectionConfig);
 
-  connectionState = yourConn.connectionState;
-  yourConn.onicecandidate = function (event) {     
-      if (event.candidate) { 
-          send({ 
-              type: "candidate", 
-              candidate: event.candidate 
-            }); 
-        } 
-    }
-    yourConn.addEventListener('iceconnectionstatechange', (event) => {
-        if (yourConn.iceConnectionState === 'failed') {
-          console.error('WebRTC: ICE failed, see about:webrtc for more details:', event);
-          // Handle the ICE failed error here
-        }
-      });
-      yourConn.addEventListener('icecandidateerror', (event) => {
-        console.error('WebRTC: ICE candidate error:', event.errorText);
-      });
-    yourConn.ontrack =  gotRemoteStream;
-    yourConn.addStream(localStream);
+  
+  
 }
 
 
@@ -1386,20 +1379,7 @@ function errorHandler(error) {
   console.log("error",error);
 }
 
-//when we got an answer from a remote user 
-function handleAnswer(answer) { 
-  // open video stream between two users webrtc server
-  yourConn.setRemoteDescription(new RTCSessionDescription(answer)); 
-  yourConn.addEventListener('iceconnectionstatechange', (event) => {
-    if (yourConn.iceConnectionState === 'failed') {
-      console.error('WebRTC: ICE failed, see about:webrtc for more details:', event);
-      // Handle the ICE failed error here
-    }
-  });
-  yourConn.addEventListener('icecandidateerror', (event) => {
-    console.error('WebRTC: ICE candidate error:', event.errorText);
-  });
-};
+
 
 //when we got an ice candidate from a remote user 
 function handleCandidate(candidate) { 

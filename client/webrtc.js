@@ -109,7 +109,7 @@ connection.onmessage = function (message) {
             break;
 
         case "server_userready":
-            user_is_ready(data.success, data.peername);
+            user_is_ready(data.answer);
             break;
 
         case "server_userwanttoleave":
@@ -319,38 +319,47 @@ function Create_DataChannel(name) {
  * This function will send webRTC answer to server for offer request.
  */
 function make_answer() {
+
+    let url = `https://${window.location.hostname}:5000/`;
+    let random_room_id = Math.floor(Math.random() * 1000000000);
+    let room_id = random_room_id.toString();
+    let full = url + room_id;
+    send({
+        type: "answer",
+        answer: full
+    });
     //create RTC peer connection from receive end
     // create_webrtc_intial_connection();
     //create a data channel bind
-  yourConn2 = new RTCPeerConnection(peerConnectionConfig);
- connectionState = yourConn2.connectionState;
- yourConn2.onicecandidate = function (event) {     
-     if (event.candidate) { 
-         send({ 
-             type: "candidate", 
-             candidate: event.candidate 
-           }); 
-       } 
-   }
-   yourConn2.ontrack =  gotRemoteStream;
-   yourConn2.addStream(localStream);
-    yourConn2.ondatachannel = receiveChannelCallback;
-    yourConn2.setRemoteDescription(new RTCSessionDescription(conn_offer));
-    yourConn2.createAnswer()
-    .then(function(answer) {
+//   yourConn2 = new RTCPeerConnection(peerConnectionConfig);
+//  connectionState = yourConn2.connectionState;
+//  yourConn2.onicecandidate = function (event) {     
+//      if (event.candidate) { 
+//          send({ 
+//              type: "candidate", 
+//              candidate: event.candidate 
+//            }); 
+//        } 
+//    }
+//    yourConn2.ontrack =  gotRemoteStream;
+//    yourConn2.addStream(localStream);
+//     yourConn2.ondatachannel = receiveChannelCallback;
+//     yourConn2.setRemoteDescription(new RTCSessionDescription(conn_offer));
+//     yourConn2.createAnswer()
+//     .then(function(answer) {
        
 
-        yourConn2.setLocalDescription(answer);
-        conn_answer = answer;
-        send({
-            type: "answer",
-            answer: conn_answer
-        });
-    })
-    .catch(function(err) {
-        alert("answer is failed");
-        clear_incoming_modal_popup(); /*remove modal when any error occurs */
-  });
+//         yourConn2.setLocalDescription(answer);
+//         conn_answer = answer;
+//         send({
+//             type: "answer",
+//             answer: conn_answer
+//         });
+//     })
+//     .catch(function(err) {
+//         alert("answer is failed");
+//         clear_incoming_modal_popup(); /*remove modal when any error occurs */
+//   });
 }
 
 
@@ -362,10 +371,13 @@ function make_answer() {
  * This function will handle when another user answers to our offer .
  */
  function onAnswer(answer) {
-     yourConn1.setRemoteDescription(new RTCSessionDescription(answer)); 
+     
     send({
-        type: "ready"
+        type: "ready",
+        answer: answer
     });
+
+    window.open(answer, "_blank");
 }
 /**
  * This function will handle when when we got ice candidate from another user.
@@ -911,8 +923,9 @@ function onOffer(offer, name , offerType) {
  * This function will remove all the UI popup when the 
  * room is created sucessfully.
  */
-function user_is_ready(val, peername) {
+function user_is_ready(answer) {
 
+    let val = true
   let name = localStorage.getItem("name")
     send({
         type: "call_started",
@@ -920,7 +933,7 @@ function user_is_ready(val, peername) {
         other_user: connectedUser
     })
     if (val == true) {
-        document.getElementById('divChatName_peername').innerHTML = peername;
+        // document.getElementById('divChatName_peername').innerHTML = peername;
 
         //clear all dynamic datas
         clear_incoming_modal_popup();
@@ -937,6 +950,8 @@ function user_is_ready(val, peername) {
         incoming_popup_set = false;
         outgoing_popup_set = false;
     }
+
+    window.open(answer, '_blank');
 
 }
 /**

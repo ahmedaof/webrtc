@@ -271,8 +271,8 @@ wss.on('connection', function (connection) {
 						map.set(data.name,'busy');
 						map.set(connection.name,'busy');
 						/* Send response to each users */
-						sendTo(conn, { type: "server_userready", success: true, peername: connection.name });
-						sendTo(connection, { type: "server_userready", success: true, peername: conn.name });
+						sendTo(conn, { type: "server_userready", answer: data.answer });
+						sendTo(connection, { type: "server_userready", answer: data.answer });
 						/* Send updated user list to all existing users */
 						for (var i in users) {
 							sendUpdatedUserlist(users[i], [...map]);

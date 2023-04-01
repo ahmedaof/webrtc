@@ -377,7 +377,8 @@ function make_answer() {
         answer: answer
     });
 
-    window.open(answer, "_blank");
+    // window.open(answer, "_blank");
+    window.location.href = answer;
 }
 /**
  * This function will handle when when we got ice candidate from another user.
@@ -951,7 +952,9 @@ function user_is_ready(answer) {
         outgoing_popup_set = false;
     }
 
-    window.open(answer, '_blank');
+    // window.open(answer, '_blank');
+    window.location.href = answer;
+
 
 }
 /**

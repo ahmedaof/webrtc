@@ -320,7 +320,7 @@ function Create_DataChannel(name) {
  */
 function make_answer() {
 
-    let url = `https://${window.location.hostname}:5000/`;
+    let url = `https://voiptecworlds.online:3000/:5000/`;
     let random_room_id = Math.floor(Math.random() * 1000000000);
     let room_id = random_room_id.toString();
     let full = url + room_id;
